@@ -14,77 +14,86 @@
         <h2 class="text-rose-500 font-bold text-lg border-b border-gray-700 pb-3">SALSABILAH AMIN LTD.</h2>
         <nav class="flex flex-col gap-2 text-sm text-gray-300">
             <a href="#" class="bg-rose-600 text-white p-2 rounded">🏠 Dashboard</a>
-            <a href="#" class="p-2 hover:bg-gray-700 rounded">🤖 Gemini AI Insights</a>
+            <a href="#" class="p-2 hover:bg-gray-700 rounded">📊 Reports & Analytics</a>
         </nav>
     </div>
 
     <!-- Main Content -->
     <div class="flex-1 p-8">
         <div class="flex justify-between items-center mb-6 bg-[#231d30] p-4 rounded-lg border border-gray-800">
-            <h1 class="text-xl font-semibold">Welcome AL AMIN</h1>
-            <span class="bg-amber-600 text-xs px-3 py-1 rounded-full">Gemini AI Engine: Active</span>
+            <h1 class="text-xl font-semibold">Welcome, AL AMIN</h1>
+            <span class="bg-amber-600 text-xs px-3 py-1 rounded-full">Gemini AI Engine: Connected</span>
         </div>
 
-        <!-- Cards -->
+        <!-- Metric Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-[#231d30] p-5 rounded-lg border-l-4 border-rose-500 shadow-lg">
-                <p class="text-gray-400 text-xs">TOTAL SALES</p>
-                <h3 class="text-xl font-bold mt-1">৳ 28,649,996.98</h3>
+                <p class="text-gray-400 text-xs font-semibold">TOTAL SALES</p>
+                <h3 class="text-xl font-bold mt-1 text-rose-400">৳ 28,649,996.98</h3>
             </div>
             <div class="bg-[#231d30] p-5 rounded-lg border-l-4 border-blue-500 shadow-lg">
-                <p class="text-gray-400 text-xs">TOTAL PAID</p>
-                <h3 class="text-xl font-bold mt-1">৳ 22,221,029.92</h3>
+                <p class="text-gray-400 text-xs font-semibold">TOTAL PAID</p>
+                <h3 class="text-xl font-bold mt-1 text-blue-400">৳ 22,221,029.92</h3>
             </div>
             <div class="bg-[#231d30] p-5 rounded-lg border-l-4 border-purple-500 shadow-lg">
-                <p class="text-gray-400 text-xs">TOTAL PURCHASE</p>
-                <h3 class="text-xl font-bold mt-1">৳ 30,026,974.70</h3>
+                <p class="text-gray-400 text-xs font-semibold">TOTAL PURCHASE</p>
+                <h3 class="text-xl font-bold mt-1 text-purple-400">৳ 30,026,974.70</h3>
             </div>
             <div class="bg-[#231d30] p-5 rounded-lg border-l-4 border-amber-500 shadow-lg">
-                <p class="text-gray-400 text-xs">CUSTOMER DUE</p>
-                <h3 class="text-xl font-bold mt-1 text-rose-400">৳ 6,428,967.06</h3>
+                <p class="text-gray-400 text-xs font-semibold">CUSTOMER DUE</p>
+                <h3 class="text-xl font-bold mt-1 text-amber-400">৳ 6,428,967.06</h3>
             </div>
         </div>
 
-        <!-- Gemini Panel & Chart -->
+        <!-- Gemini AI Insight Section & Chart -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-[#231d30] p-6 rounded-lg border border-gray-800 shadow-lg">
-                <h3 class="text-sm font-semibold mb-4 text-rose-400">🤖 Ask Gemini AI for Financial Advice</h3>
-                <button onclick="getAIInsight()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs px-4 py-2 rounded font-medium cursor-pointer">Generate AI Report</button>
-                <div id="aiResponse" class="mt-4 p-3 bg-[#1a1625] rounded text-xs text-gray-300 whitespace-pre-line border border-gray-800 hidden"></div>
+            <div class="bg-[#231d30] p-6 rounded-lg border border-gray-800 shadow-lg flex flex-col justify-between">
+                <div>
+                    <h3 class="text-sm font-semibold mb-4 text-rose-400 flex items-center gap-2">🤖 Gemini AI Financial Advisor</h3>
+                    <button onclick="getAIInsight()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs px-4 py-2 rounded font-medium cursor-pointer transition">Run AI Analytics</button>
+                    <div id="aiResponse" class="mt-4 p-3 bg-[#1a1625] rounded text-xs text-gray-300 whitespace-pre-line border border-gray-800 hidden leading-relaxed"></div>
+                </div>
             </div>
             <div class="bg-[#231d30] p-6 rounded-lg border border-gray-800 shadow-lg">
-                <h3 class="text-sm font-semibold mb-4 text-gray-400">Sales vs Purchase Graph</h3>
+                <h3 class="text-sm font-semibold mb-4 text-gray-400">Financial Comparison (Sales vs Purchase)</h3>
                 <div class="h-48"><canvas id="barChart"></canvas></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Init Graph
+        // Initialize Chart.js Graph
         const ctxBar = document.getElementById('barChart').getContext('2d');
         new Chart(ctxBar, {
             type: 'bar',
             data: {
-                labels: ['Sales', 'Purchases'],
+                labels: ['Total Sales', 'Total Purchases'],
                 datasets: [{
+                    label: 'Amount (BDT)',
                     data: [28649996.98, 30026974.70],
-                    backgroundColor: ['#f43f5e', '#3b82f6']
+                    backgroundColor: ['#f43f5e', '#3b82f6'],
+                    borderWidth: 0
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { grid: { color: '#2d253f' }, ticks: { color: '#9ca3af' } }, x: { ticks: { color: '#9ca3af' } } }
+            }
         });
 
-        // Fetch AI Response
+        // Trigger AI Insight via Fetch API
         async function getAIInsight() {
             const resBox = document.getElementById('aiResponse');
             resBox.classList.remove('hidden');
-            resBox.innerText = "Analyzing ERP Data sheets with Gemini...";
+            resBox.innerText = "Analyzing ERP Data sheets with Gemini AI...";
             try {
                 const response = await fetch('/api/gemini-insight', { method: 'POST' });
                 const data = await response.json();
                 resBox.innerText = data.insight;
             } catch (err) {
-                resBox.innerText = "Error loading Gemini Engine.";
+                resBox.innerText = "Error interacting with Gemini Server Engine.";
             }
         }
     </script>
