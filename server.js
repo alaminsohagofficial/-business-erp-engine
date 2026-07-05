@@ -33,12 +33,12 @@ app.post('/api/gemini-insight', (req, res) => {
     return res.status(200).json({ insight: insights });
 });
 
-// ২. স্ট্যাটিক ফাইল মিডলওয়্যার (সব ফাইল সরাসরি রুট বা মেইন ডিরেক্টরি থেকে লোড হবে)
-app.use(express.static(__dirname));
+// ২. স্ট্যাটিক ফাইল মিডলওয়্যার (পাবলিক ফোল্ডারের জন্য সেট করা হলো)
+app.use(express.static(path.join(__dirname, 'public')));
 
-// ৩. ওয়াইল্ডকার্ড ফলব্যাক রুট (সবার শেষে থাকবে এবং রুট ডিরেক্টরির index.html লোড করবে)
+// ৩. ওয়াইল্ডকার্ড ফলব্যাক রুট (public ফোল্ডারের index.html ফাইলকে লোড করবে)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
