@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SALSABILAH AMIN LIMITED - ERP Dashboard</title>
+    <title>SALSABILAH AMIN LIMITED - AI ERP</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -13,100 +13,80 @@
     <div class="w-64 bg-[#231d30] p-5 flex flex-col gap-4 border-r border-gray-800 shrink-0">
         <h2 class="text-rose-500 font-bold text-lg border-b border-gray-700 pb-3">SALSABILAH AMIN LTD.</h2>
         <nav class="flex flex-col gap-2 text-sm text-gray-300">
-            <a href="#" class="bg-rose-600 text-white p-2 rounded">🏠 Home</a>
-            <a href="#" class="p-2 hover:bg-gray-700 rounded">👥 User Management</a>
-            <a href="#" class="p-2 hover:bg-gray-700 rounded">📞 Contacts</a>
-            <a href="#" class="p-2 hover:bg-gray-700 rounded">📦 Products</a>
-            <a href="#" class="p-2 hover:bg-gray-700 rounded">🛒 Purchases</a>
-            <a href="#" class="p-2 hover:bg-gray-700 rounded">💰 Sell</a>
-            <a href="#" class="p-2 hover:bg-gray-700 rounded">📊 Reports</a>
+            <a href="#" class="bg-rose-600 text-white p-2 rounded">🏠 Dashboard</a>
+            <a href="#" class="p-2 hover:bg-gray-700 rounded">🤖 Gemini AI Insights</a>
         </nav>
     </div>
 
     <!-- Main Content -->
     <div class="flex-1 p-8">
-        <!-- Top Bar -->
         <div class="flex justify-between items-center mb-6 bg-[#231d30] p-4 rounded-lg border border-gray-800">
             <h1 class="text-xl font-semibold">Welcome AL AMIN</h1>
-            <span class="bg-amber-600 text-xs px-3 py-1 rounded-full">Subscription Remaining: 15 Days</span>
+            <span class="bg-amber-600 text-xs px-3 py-1 rounded-full">Gemini AI Engine: Active</span>
         </div>
 
-        <!-- Real Stats Cards -->
+        <!-- Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-[#231d30] p-5 rounded-lg border-l-4 border-rose-500 shadow-lg">
-                <p class="text-gray-400 text-xs uppercase">Total Sales</p>
-                <h3 class="text-2xl font-bold mt-1">৳ 28,649,996.98</h3>
+                <p class="text-gray-400 text-xs">TOTAL SALES</p>
+                <h3 class="text-xl font-bold mt-1">৳ 28,649,996.98</h3>
             </div>
             <div class="bg-[#231d30] p-5 rounded-lg border-l-4 border-blue-500 shadow-lg">
-                <p class="text-gray-400 text-xs uppercase">Total Paid (Collected)</p>
-                <h3 class="text-2xl font-bold mt-1">৳ 22,221,029.92</h3>
+                <p class="text-gray-400 text-xs">TOTAL PAID</p>
+                <h3 class="text-xl font-bold mt-1">৳ 22,221,029.92</h3>
             </div>
             <div class="bg-[#231d30] p-5 rounded-lg border-l-4 border-purple-500 shadow-lg">
-                <p class="text-gray-400 text-xs uppercase">Total Purchase</p>
-                <h3 class="text-2xl font-bold mt-1">৳ 30,026,747.70</h3>
+                <p class="text-gray-400 text-xs">TOTAL PURCHASE</p>
+                <h3 class="text-xl font-bold mt-1">৳ 30,026,974.70</h3>
             </div>
             <div class="bg-[#231d30] p-5 rounded-lg border-l-4 border-amber-500 shadow-lg">
-                <p class="text-gray-400 text-xs uppercase">Customer Due</p>
-                <h3 class="text-2xl font-bold mt-1 text-rose-400">৳ 6,428,967.06</h3>
+                <p class="text-gray-400 text-xs">CUSTOMER DUE</p>
+                <h3 class="text-xl font-bold mt-1 text-rose-400">৳ 6,428,967.06</h3>
             </div>
         </div>
 
-        <!-- Real Chart Section -->
+        <!-- Gemini Panel & Chart -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-[#231d30] p-6 rounded-lg border border-gray-800 shadow-lg">
-                <h3 class="text-sm font-semibold mb-4 text-gray-400">Comparison (Sales vs Purchase)</h3>
-                <div class="h-64">
-                    <canvas id="barChart"></canvas>
-                </div>
+                <h3 class="text-sm font-semibold mb-4 text-rose-400">🤖 Ask Gemini AI for Financial Advice</h3>
+                <button onclick="getAIInsight()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs px-4 py-2 rounded font-medium cursor-pointer">Generate AI Report</button>
+                <div id="aiResponse" class="mt-4 p-3 bg-[#1a1625] rounded text-xs text-gray-300 whitespace-pre-line border border-gray-800 hidden"></div>
             </div>
             <div class="bg-[#231d30] p-6 rounded-lg border border-gray-800 shadow-lg">
-                <h3 class="text-sm font-semibold mb-4 text-gray-400">Due Analysis</h3>
-                <div class="h-64 flex justify-center">
-                    <canvas id="pieChart"></canvas>
-                </div>
+                <h3 class="text-sm font-semibold mb-4 text-gray-400">Sales vs Purchase Graph</h3>
+                <div class="h-48"><canvas id="barChart"></canvas></div>
             </div>
         </div>
     </div>
 
-    <!-- Chart JavaScript Script -->
     <script>
-        // Bar Chart
+        // Init Graph
         const ctxBar = document.getElementById('barChart').getContext('2d');
         new Chart(ctxBar, {
             type: 'bar',
             data: {
-                labels: ['Total Sales', 'Total Purchases'],
+                labels: ['Sales', 'Purchases'],
                 datasets: [{
-                    label: 'Amount (BDT)',
-                    data: [28649996.98, 30026747.70],
-                    backgroundColor: ['#f43f5e', '#3b82f6'],
-                    borderWidth: 0
+                    data: [28649996.98, 30026974.70],
+                    backgroundColor: ['#f43f5e', '#3b82f6']
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { y: { ticks: { color: '#9ca3af' } }, x: { ticks: { color: '#9ca3af' } } }
-            }
+            options: { responsive: true, maintainAspectRatio: false }
         });
 
-        // Pie Chart
-        const ctxPie = document.getElementById('pieChart').getContext('2d');
-        new Chart(ctxPie, {
-            type: 'doughnut',
-            data: {
-                labels: ['Customer Due', 'Supplier Due'],
-                datasets: [{
-                    data: [6428967.06, 5027923.60],
-                    backgroundColor: ['#ec4899', '#f59e0b']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#9ca3af' } } }
+        // Fetch AI Response
+        async function getAIInsight() {
+            const resBox = document.getElementById('aiResponse');
+            resBox.classList.remove('hidden');
+            resBox.innerText = "Analyzing ERP Data sheets with Gemini...";
+            try {
+                const response = await fetch('/api/gemini-insight', { method: 'POST' });
+                const data = await response.json();
+                resBox.innerText = data.insight;
+            } catch (err) {
+                resBox.innerText = "Error loading Gemini Engine.";
             }
-        });
+        }
     </script>
 </body>
 </html>
