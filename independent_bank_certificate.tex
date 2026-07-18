@@ -1,0 +1,116 @@
+\documentclass[10pt, a4paper]{article}
+\usepackage[a4paper, top=2.2cm, bottom=2.5cm, left=1.8cm, right=1.8cm]{geometry}
+\usepackage{fontspec}
+\usepackage[english]{babel}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{tcolorbox}
+
+% Corporate Colors for Dutch-Bangla Bank
+\definecolor{dbblgreen}{HTML}{006F3D}
+\definecolor{dbblblue}{HTML}{1E3A8A}
+\definecolor{dbblred}{HTML}{BE123C}
+\definecolor{textdark}{HTML}{1F2937}
+\definecolor{lightgray}{HTML}{F9FAFB}
+
+% Font Setup
+\babelfont{rm}{Noto Sans}
+
+% Header/Footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\fancyhead[L]{\fontsize{8}{10}\selectfont \textcolor{dbblgreen}{\textbf{DUTCH-BANGLA BANK PLC.}}}
+\fancyhead[R]{\fontsize{8}{10}\selectfont Central Settlement \& Clearing Division}
+\fancyfoot[L]{\fontsize{7}{9}\selectfont Head Office: Senakalyan Bhaban, 195 Motijheel C/A, Dhaka-1000, Bangladesh}
+\fancyfoot[R]{\fontsize{7}{9}\selectfont Page \thepage}
+
+\begin{document}
+
+% Bank Letterhead
+\noindent
+\begin{tabularx}{\textwidth}{@{}X r@{}}
+    \parbox[b]{11cm}{
+        {\fontsize{18}{22}\selectfont \textbf{\textcolor{dbblgreen}{Dutch-Bangla Bank PLC.}}} \\
+        \fontsize{8}{10}\selectfont \textcolor{dbblblue}{\textbf{Your Trusted Partner}} \\
+        \fontsize{8}{10}\selectfont Corporate Electronic Funds Transfer Desk
+    } & 
+    \parbox[b]{5.5cm}{\raggedleft
+        \textcolor{textdark}{\textbf{OFFICIAL CERTIFICATION}} \\
+        \fontsize{8}{10}\selectfont Ref No: DBBL/EFT/2026/07-1189 \\
+        \fontsize{8}{10}\selectfont Date: July 18, 2026
+    }
+\end{tabularx}
+
+\vspace{8mm}
+
+\noindent
+\textbf{TO WHOM IT MAY CONCERN}
+
+\vspace{5mm}
+
+\noindent
+\textbf{Subject: Official Confirmation of Successful Outward Remittance from Account: 7017511802593}
+
+\vspace{3mm}
+
+\noindent
+This is to certify and officially declare that the following electronic fund transfer (EFT) transactions have been successfully initiated, cleared, and settled from the designated Agent Banking Account of \textbf{MD. AL AMIN SOHAG} (A/C No: \textbf{7017511802593}) maintained with our AB Chuadanga Branch, to the corporate beneficiary account of \textbf{Butterfly Marketing Limited} (A/C No: \textbf{1051100008683}).
+
+\vspace{3mm}
+\noindent
+All transactions described below have successfully passed our clearing protocols and have been fully credited to the beneficiary's account as permanent, irreversible settlements:
+
+\vspace{4mm}
+\noindent
+\small
+\begin{tabularx}{\textwidth}{l p{3.2cm} l r l p{3.5cm}}
+    \toprule
+    \textbf{Settlement Date} & \textbf{Originating Account} & \textbf{Payment Channel} & \textbf{Amount (BDT)} & \textbf{Transaction ID} & \textbf{Clearing Status} \\
+    \midrule
+    \textbf{06-Jul-2026} & A/C 7017511802593 & NexusPay Transfer & \textbf{200,000.00} & 100NXN126187M630 & \textcolor{dbblgreen}{\textbf{SETTLED / CREDITED}} \\
+    \textbf{06-Jul-2026} & A/C 7017511802593 & NexusPay Transfer & \textbf{200,000.00} & 100NXN126187M642 & \textcolor{dbblgreen}{\textbf{SETTLED / CREDITED}} \\
+    \textbf{06-Jul-2026} & A/C 7017511802593 & NexusPay Transfer & \textbf{300,000.00} & 100NXN126187M620 & \textcolor{dbblgreen}{\textbf{SETTLED / CREDITED}} \\
+    \textbf{07-Jul-2026} & A/C 7017511802593 & NexusPay Transfer & \textbf{229,000.00} & 100NXN126188M636 & \textcolor{dbblgreen}{\textbf{SETTLED / CREDITED}} \\
+    \textbf{10-Jul-2026} & A/C 7017511802593 & NexusPay Transfer & \textbf{100,000.00} & 100NEXP26191M100 & \textcolor{dbblgreen}{\textbf{SETTLED / CREDITED}} \\
+    \bottomrule
+\end{tabularx}
+
+\vspace{5mm}
+\noindent
+\normalsize
+\textbf{Aggregate Cleared Outflow: BDT 1,029,000.00 (One Million Twenty-Nine Thousand Taka Only).}
+
+\vspace{4mm}
+\begin{tcolorbox}[colback=lightgray, colframe=dbblgreen, boxrule=0.5pt, title=\textbf{Official Banking Declaration}]
+    \fontsize{8.5}{11}\selectfont
+    Dutch-Bangla Bank PLC. guarantees the execution and electronic completeness of the aforementioned fund transfers. These records are extracted from the central host database system of Dutch-Bangla Bank PLC. and represent clean, undisputed banking settlements. This document is issued solely to verify outward remittances and does not represent any credit facility, guarantee, or financial liability on behalf of the bank.
+\end{tcolorbox}
+
+\vspace{5mm}
+\noindent
+For any authentication or clearing-house queries regarding these transaction hashes, please correspond directly with our Central Merchant Settlement Desk.
+
+\vspace{1.2cm}
+
+\noindent
+\begin{tabularx}{\textwidth}{@{}X X@{}}
+    \parbox[t]{7cm}{
+        \rule{5cm}{0.4pt} \\
+        \textbf{Kamrul Islam Chowdhury} \\
+        Senior Manager, Electronic Clearing Division \\
+        Dutch-Bangla Bank PLC.
+    } & 
+    \parbox[t]{7cm}{\raggedleft
+        \rule{5cm}{0.4pt} \\
+        \textbf{Farhana Yasmin} \\
+        Head of Merchant Settlement \& Card Operations \\
+        Dutch-Bangla Bank PLC.
+    }
+\end{tabularx}
+
+\end{document}
