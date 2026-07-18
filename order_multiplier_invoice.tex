@@ -1,0 +1,155 @@
+\documentclass[9pt, a4paper]{article}
+\usepackage[a4paper, top=1.5cm, bottom=2cm, left=1.2cm, right=1.2cm]{geometry}
+\usepackage{fontspec}
+\usepackage[english]{babel}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{longtable}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+
+% Corporate Colors
+\definecolor{corporateblue}{HTML}{0B5394}
+\definecolor{textdark}{HTML}{202124}
+\definecolor{lightgray}{HTML}{F8F9FA}
+\definecolor{bordergray}{HTML}{DADCE0}
+\definecolor{alertred}{HTML}{C5221F}
+\definecolor{warningbg}{HTML}{FCE8E6}
+\definecolor{successgreen}{HTML}{137333}
+
+% Font Setup
+\babelfont{rm}{Noto Sans}
+
+% Header/Footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\fancyhead[L]{\fontsize{8}{10}\selectfont \textcolor{corporateblue}{\textbf{BUTTERFLY MARKETING LIMITED}}}
+\fancyhead[R]{\fontsize{8}{10}\selectfont Corporate Order \& Credit Expansion Wing}
+\fancyfoot[L]{\fontsize{7}{9}\selectfont Generated on: 18-07-2026 | System Order Ref: BML-ORD-000010189-X2}
+\fancyfoot[R]{\fontsize{7}{9}\selectfont Page \thepage}
+
+\begin{document}
+
+% Top Branding Header
+\noindent
+\begin{tabularx}{\textwidth}{@{}X r@{}}
+    \parbox[b]{11cm}{
+        {\fontsize{18}{22}\selectfont \textbf{\textcolor{corporateblue}{BUTTERFLY MARKETING LIMITED}}} \\
+        \fontsize{8}{10}\selectfont Corporate Order Operations \& Financial Control Division \\
+        \fontsize{8}{10}\selectfont Head Office: Dhaka, Bangladesh
+    } & 
+    \parbox[b]{5.5cm}{\raggedleft
+        \textcolor{alertred}{\textbf{SPECIAL BOARD APPROVAL REQUIRED}} \\
+        \fontsize{8}{10}\selectfont Order Date: June 19, 2026 \\
+        \fontsize{8}{10}\selectfont Re-evaluation Date: July 18, 2026
+    }
+\end{tabularx}
+
+\vspace{5mm}
+
+% Customer/Dealer Profile Box
+\noindent
+\begin{tcolorbox}[colback=lightgray, colframe=bordergray, boxrule=0.5pt, arc=3pt, top=2.5mm, bottom=2.5mm, left=2.5mm, right=2.5mm]
+    \fontsize{9}{11}\selectfont
+    \begin{tabularx}{\textwidth}{@{}l X l X@{}}
+        \textbf{Dealer ID} & : 3000002272 & \textbf{Order Number} & : 000010189 (X2 Multiplied) \\
+        \textbf{Proprietor Name} & : \textbf{MD. AL AMIN SOHAG} & \textbf{Registered Address} & : Shah Super Market, Hatboalia, Chuadanga \\
+        \textbf{Contact Number} & : 01711745845 / 01719732134 & \textbf{Standard Credit Limit} & : BDT 650,000.00 (Active) \\
+    \end{tabularx}
+\end{tcolorbox}
+
+\vspace{3mm}
+
+% Items Table (longtable to handle page overflows)
+\noindent
+\subsection*{1. Multiplied Order Items Specification (Qty $\times$ 2)}
+\fontsize{7.5}{9.5}\selectfont
+\begin{longtable}{p{5.5cm} p{1.2cm} r r r r}
+    \toprule
+    \textbf{Product Description} & \textbf{SKU} & \textbf{Unit Price (BDT)} & \textbf{Original Qty} & \textbf{Multiplied Qty} & \textbf{Subtotal (BDT)} \\
+    \midrule
+    \endfirsthead
+    \multicolumn{6}{c}{{\bfseries \textcolor{corporateblue}{Table continued from previous page}}} \\
+    \toprule
+    \textbf{Product Description} & \textbf{SKU} & \textbf{Unit Price (BDT)} & \textbf{Original Qty} & \textbf{Multiplied Qty} & \textbf{Subtotal (BDT)} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+
+    % Item 1
+    ECO+ 32 INCH SMART TV [T1 SERIES] & 13479 & 26,301.00 & 10 & 20 & 526,020.00 \\
+    % Item 2
+    BUTTERFLY 43 INCH FHD SMART GOOGLE TV [T1G] & 13484 & 36,300.00 & 20 & 40 & 1,452,000.00 \\
+    % Item 3
+    BUTTERFLY 43 INCH QLED SMART GOOGLE TV [T1G] & 13485 & 44,100.00 & 50 & 100 & 4,410,000.00 \\
+    % Item 4
+    BUTTERFLY 55 INCH QLED SMART GOOGLE TV [T1G] & 13487 & 68,300.00 & 10 & 20 & 1,366,000.00 \\
+    % Item 5
+    LG 55 INCH 4K UHD TV [UQ8050 SERIES] & 12909 & 94,900.00 & 4 & 8 & 759,200.00 \\
+    % Item 6
+    LG 43 Inch NanoCell NANO81 4K Smart TV & 13539 & 73,900.00 & 10 & 20 & 1,478,000.00 \\
+    % Item 7
+    ECO+ 43 INCH SMART TV [T1 SERIES] & 13480 & 37,901.00 & 10 & 20 & 758,020.00 \\
+    % Item 8
+    ECO+ 566 LITER SIDE BY SIDE GLASS DOOR FRIDGE & 12517 & 99,400.00 & 10 & 20 & 1,988,000.00 \\
+    % Item 9
+    BUTTERFLY 630 LITER FRENCH DOOR REFRIGERATOR & 14162 & 139,900.00 & 10 & 20 & 2,798,000.00 \\
+    % Item 10
+    ECO+ 218 LITER FRAMELESS GLASS DOOR REFRIGERATOR & 12458 & 43,500.00 & 100 & 200 & 8,700,000.00 \\
+    % Item 11
+    ECO+ 233 LITER GLASS DOOR REFRIGERATOR BLACK & 13505 & 44,600.00 & 50 & 100 & 4,460,000.00 \\
+\end{longtable}
+
+\vspace{-4mm}
+\noindent
+\begin{tabularx}{\textwidth}{@{}X r@{}}
+    \textbf{Total Multiplied Subtotal:} & \textbf{BDT 28,695,240.00} \\
+    \textbf{VAT (calculated within subtotal):} & BDT 3,742,844.00 \\
+    \textbf{Shipping \& Handling (Doubled):} & BDT 2,000.00 \\
+    \midrule
+    \textbf{GRAND TOTAL (MUTIPLIED ORDER):} & \textbf{BDT 28,697,240.00} \\
+\end{tabularx}
+
+\vspace{5mm}
+
+% Financial Clearance Box
+\noindent
+\subsection*{2. Financial Impact \& Board-Level Credit Expansion Strategy}
+\begin{tcolorbox}[colback=warningbg, colframe=alertred, boxrule=0.5pt, title=\textbf{Urgent Financial Risk & Capital Clearance Analysis}]
+    \fontsize{8.5}{11}\selectfont
+    \begin{tabularx}{\textwidth}{@{}X r@{}}
+        \textbf{Multiplied Order Liability (মোট অর্ডারের মূল্য):} & \textbf{BDT 28,697,240.00} \\
+        Less: MD. AL AMIN SOHAG's True Verified Advance Balance (প্রকৃত অগ্রিম জমা): & BDT -452,790.00 \\
+        \midrule
+        \textbf{Net Capital Exposure (মোট অনিরাপদ ক্যাপিটাল লায়াবিলিটি):} & \textbf{BDT 28,244,450.00} \\
+        \midrule
+        \textbf{Required Special Credit Limit Overwrite (প্রয়োজনীয় বিশেষ ঋণসীমা):} & \textbf{BDT 28,244,450.00} \\
+    \end{tabularx}
+    \vspace{2mm}
+    \hrule
+    \vspace{2.5mm}
+    \fontsize{8}{10}\selectfont
+    \textbf{Core Audit Recommendation for Board Approval (বোর্ড এবং ডিরেক্টরের জন্য সুপারিশমালা):} \\
+    ১. **Unprecedented Scale:** এই অর্ডারটি বাটারফ্লাই-এর ইতিহাসে হাটবোয়ালিয়া জোনের জন্য সর্ববৃহৎ একক ডিলার অর্ডার। ডিলারের বর্তমান ক্রেডিট লিমিট ৬.৫ লাখ BDT হওয়ায় অতিরিক্ত **২৮.২৪ মিলিয়ন BDT**-এর স্পেশাল সিকিউরিটি ক্লিয়ারেন্স প্রয়োজন। \\
+    ২. **Risk Mitigation Strategy:** মালামাল ডেলিভারির পূর্বে ৫০\% ফান্ড ট্র্যান্সফার (BDT ১৪,৩৪৮,৬২০.০০) ক্যাশ বা ব্যাংক গ্যারান্টির মাধ্যমে নিশ্চিত করে বাকি অংশ কিস্তি/চেকের বিপরীতে প্রদানের জন্য করপোরেট বোর্ড থেকে স্পেশাল ওভাররাইড পলিসি ইস্যু করার সুপারিশ করা হচ্ছে।
+\end{tcolorbox}
+
+\vspace{1.5cm}
+
+% Multi-Signature Block
+\noindent
+\begin{tabularx}{\textwidth}{X X X}
+    \centering \rule{4.5cm}{0.4pt} \\ \fontsize{8}{10}\selectfont Verified By \\ Head of Corporate Accounts & 
+    \centering \rule{4.5cm}{0.4pt} \\ \fontsize{8}{10}\selectfont Recommended By \\ Chief Financial Officer (CFO) & 
+    \centering \rule{4.5cm}{0.4pt} \\ \fontsize{8}{10}\selectfont Approved By \\ Board of Directors / Director
+\end{tabularx}
+
+\end{document}
