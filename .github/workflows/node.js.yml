@@ -17,16 +17,17 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        # package-lock.json না থাকায় cache অপশনটি সাময়িকভাবে বন্ধ করা হলো
-        
-    - run: npm install # npm ci পরিবর্তন করে npm install করা হলো যাতে লক ফাইল ছাড়া বিল্ড হতে পারে
+
+    - run: npm install
+    
     - run: npm run build --if-present
+    
     - run: npm test
