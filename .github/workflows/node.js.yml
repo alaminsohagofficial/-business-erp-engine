@@ -1,4 +1,4 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# This workflow will do a clean installation of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
 name: Node.js CI
@@ -25,7 +25,8 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
+        # package-lock.json না থাকায় cache অপশনটি সাময়িকভাবে বন্ধ করা হলো
+        
+    - run: npm install # npm ci পরিবর্তন করে npm install করা হলো যাতে লক ফাইল ছাড়া বিল্ড হতে পারে
     - run: npm run build --if-present
     - run: npm test
