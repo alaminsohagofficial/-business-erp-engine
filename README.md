@@ -1,34 +1,15 @@
-# -business-erp-engine 🚀
-**Sales, Inventory, and Customer Management Dashboard with Gemini AI integration.**
+# VatOne ERP & DBBL Smart Reconciliation Engine
+> Enterprise-grade financial synchronization & ledger reconciliation gateway designed for seamless SAP alignment and Dutch-Bangla Bank PLC (DBBL) transaction parsing.
 
-Welcome to the official repository of **SALSABILAH AMIN LIMITED**'s advanced ERP engine. This cloud-based system efficiently manages sales tracking, automated purchase workflow, supplier accounts, and deep customer relationship management, all supercharged with Gemini AI capabilities.
+![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)
+![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
+![Directory Structure](https://img.shields.io/badge/structure-public%2Findex.html-orange.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 
----
+## 📌 Project Overview
+The **VatOne ERP & DBBL Reconciliation Engine** is a high-security, lightweight financial middleware architecture. It resolves critical accounting synchronization mismatches between internal Enterprise Resource Planning (ERP) frameworks and external Bank Clearing Houses.
 
-## 🌟 Key Features
+This engine was specifically designed to handle high-volume dealer transaction verification, split-posting detection (e.g., mitigating the **BDT 200,000.00** ERP discrepancy), and real-time payment validation without compromising on-field supply chain operations.
 
-*   **📊 Dynamic ERP Dashboard:** Real-time visibility into Total Sales, Net Profit, Purchases, and Expenses.
-*   **🤖 Gemini AI Integration:** Smart automated insights, sales forecasting, penalty computations, and intelligent data analysis.
-*   **🛒 Inventory & Product Management:** Seamless tracking of multi-category products, brands, and active product warranties.
-*   **👥 Contact & Account Management:** Full-fledged bookkeeping for customers, suppliers, customer segmentation groups, and historical logs.
-*   **📈 Advanced Visualizations:** Interactive financial charts (Sales vs. Purchases, Due analysis graphs) built on Chart.js.
-
----
-
-## 🛠️ Technology Stack
-
-*   **Backend Engine:** Node.js with Express.js REST APIs.
-*   **Frontend Interface:** HTML5, modern Tailwind CSS architecture, Chart.js.
-*   **Database Cloud Architecture:** Ready for PostgreSQL relational scaling.
-*   **Deployment Environment:** Optimized for Render PaaS architecture.
-
----
-
-## 📂 Repository Layout
-
-```bash
-├── public/
-│   └── index.html     # High-fidelity dashboard interface with responsive UI
-├── server.js          # Main Express server controlling paths and routing
-├── package.json       # App configuration, lifecycle scripts, and packages
-└── README.md          # Project documentation architecture
+## 📁 Repository Structure
+To maintain corporate security and clear build separation, the production interface is housed strictly within the public directory:
