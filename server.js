@@ -1,84 +1,42 @@
-const { Pool } = require('pg');
+const express = require('express');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// আপনার PostgreSQL কানেকশন স্ট্রিং (এনভায়রনমেন্ট ভেরিয়েবল থেকে নেওয়া ভালো)
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://username:password@localhost:5432/your_database'
-});
+app.use(express.json());
 
-// ১. ডাটাবেজ থেকে নির্দিষ্ট ডিলারের ডেটা তুলে আনার ডায়নামিক রাউট (GET)
-app.get('/api/sap/butterfly/dealer/:dealer_reference', async (req, res) => {
-    const { dealer_reference } = req.params;
+// ফ্রন্টএন্ডের HTML ফাইলটি যদি রুটে থাকে তবে তা সার্ভ করার জন্য
+app.use(express.static(__dirname));
 
+// জেমিনি এআই অ্যানালিটিক্স এন্ডপয়েন্ট
+app.post('/api/gemini-insight', async (req, res) => {
     try {
-        const query = `
-            SELECT * FROM sap_dealer_staging 
-            WHERE dealer_reference = $1;
-        `;
-        const result = await pool.query(query, [dealer_reference]);
+        // ড্যাশবোর্ডের ফিন্যান্সিয়াল ডেটা
+        const data = {
+            totalSales: 28649996.98,
+            totalPaid: 22221029.92,
+            totalPurchase: 30026974.70,
+            customerDue: 6428967.06
+        };
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: `Dealer record with reference ${dealer_reference} not found in database.`
-            });
-        }
+        // এখানে আপনার জেমিনি এআই ইঞ্জিন বা কাস্টম প্রম্পটের লজিক বসবে
+        // আপাতত একটি ডাইনামিক অ্যানালিটিক্যাল রেসপন্স পাঠানো হচ্ছে:
+        const insight = `🤖 Salsabilah Amin Ltd. - Gemini AI Financial Report:
 
-        res.status(200).json({
-            success: true,
-            data: result.rows[0]
-        });
+1. Cash Flow Alert: আপনার মোট পারচেজ (৳30.02M) মোট সেলস (৳28.64M) এর চেয়ে বেশি। অর্থাৎ ইনভেন্টরিতে ক্যাশ ব্লক হয়ে আছে।
+2. Liquidity Risk: মোট বিক্রির প্রায় 22.4% টাকা (৳6.42M) কাস্টমার ডিউ হিসেবে আটকে আছে। 
+3. Recommendation: নতুন পারচেজ সাময়িক কমিয়ে বকেয়া টাকা (Due Collection) তোলার দিকে ফোকাস করলে কোম্পানির ক্যাশ ফ্লো দ্রুত পজিটিভ হবে।`;
+
+        res.json({ insight });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Database query execution failed",
-            error: error.message
-        });
+        res.status(500).json({ insight: "AI Engine processing failed." });
     }
 });
 
-// ২. বাটারফ্লাই বা SAP থেকে আসা নতুন ট্রানজেকশন ডেটা ইনসার্ট/আপডেট করার রাউট (POST)
-app.post('/api/sap/butterfly/sync-dealer', async (req, res) => {
-    const {
-        dealer_reference, base_lead_id, company_name, transaction_id,
-        transaction_date, amount, currency, batch_total, sap_module,
-        special_gl_indicator, posting_status, next_action
-    } = req.body;
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-    try {
-        // UPSERT লজিক: ডেটা থাকলে আপডেট হবে, না থাকলে নতুন ইনসার্ট হবে
-        const query = `
-            INSERT INTO sap_dealer_staging 
-            (dealer_reference, base_lead_id, company_name, transaction_id, transaction_date, amount, currency, batch_total, sap_module, special_gl_indicator, posting_status, next_action, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
-            ON CONFLICT (dealer_reference) 
-            DO UPDATE SET 
-                transaction_id = EXCLUDED.transaction_id,
-                transaction_date = EXCLUDED.transaction_date,
-                amount = EXCLUDED.amount,
-                posting_status = EXCLUDED.posting_status,
-                next_action = EXCLUDED.next_action,
-                updated_at = NOW()
-            RETURNING *;
-        `;
-
-        const values = [
-            dealer_reference, base_lead_id, company_name, transaction_id,
-            transaction_date, amount, currency, batch_total, sap_module,
-            special_gl_indicator, posting_status, next_action
-        ];
-
-        const result = await pool.query(query, values);
-
-        res.status(200).json({
-            success: true,
-            message: "Database successfully synced with SAP layer",
-            record: result.rows[0]
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to sync data to PostgreSQL",
-            error: error.message
-        });
-    }
+app.listen(PORT, () => {
+    console.log(`ERP Engine running on port ${PORT}`);
 });
