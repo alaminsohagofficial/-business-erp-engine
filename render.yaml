@@ -7,6 +7,6 @@ services:
   repo: https://github.com/alaminsohagofficial/-business-erp-engine
   plan: free
   region: singapore
-  buildCommand: yarn
-  startCommand: npm start
+  buildCommand: npm start
+  startCommand: node server.js
   autoDeployTrigger: commit
