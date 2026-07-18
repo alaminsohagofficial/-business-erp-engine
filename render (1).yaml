@@ -1,0 +1,12 @@
+# Exported from Render on 2026-07-18T20:20:49Z
+version: "1"
+services:
+- type: web
+  name: -business-erp-engine
+  runtime: node
+  repo: https://github.com/alaminsohagofficial/-business-erp-engine
+  plan: free
+  region: singapore
+  buildCommand: yarn
+  startCommand: npm start
+  autoDeployTrigger: commit
