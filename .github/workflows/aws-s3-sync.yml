@@ -1,4 +1,30 @@
-name: Direct AWS S3 PDF Synchronization
+import React, { useState } from 'react';
+import { 
+  Terminal, 
+  Key, 
+  FileCode, 
+  UploadCloud, 
+  CheckCircle, 
+  Copy, 
+  ExternalLink, 
+  AlertCircle, 
+  ArrowRight,
+  RefreshCw,
+  FolderOpen,
+  Check,
+  MousePointer,
+  Sparkles
+} from 'lucide-react';
+
+export default function App() {
+  const [activeStep, setActiveStep] = useState(1);
+  const [copiedText, setCopiedText] = useState(false);
+  const [secretStyle, setSecretStyle] = useState('standard'); // standard or custom
+
+  const repoUrl = "https://github.com/alaminsohagofficial/-business-erp-engine";
+
+  // Perfect YAML Code with Standard Secrets
+  const standardYaml = `name: Direct AWS S3 PDF Synchronization
 
 on:
   push:
@@ -15,10 +41,323 @@ jobs:
       - name: Configure AWS Credentials (Secure Key)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets['secrets.AWS_ACCESS_KEY_ID'] }}
-          aws-secret-access-key: ${{ secrets['SECRETSAWS_SECRET_ACCESS_ID'] }}
+          aws-access-key-id: \${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: \${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-southeast-1
 
       - name: Overwrite & Push PDF to AWS S3 (Singapore)
         run: |
-          aws s3 cp ./public/dealer_ledge_594016.pdf s3://vatone/dealer_ledge_594016.pdf --acl public-read
+          aws s3 cp ./public/dealer_ledge_594016.pdf s3://vatone/dealer_ledge_594016.pdf --acl public-read`;
+
+  // Custom YAML adjusted for their previous messy secrets (as a fallback)
+  const fallbackYaml = `name: Direct AWS S3 PDF Synchronization
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-ledger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (Secure Key)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: \${{ secrets['secrets.AWS_ACCESS_KEY_ID'] }}
+          aws-secret-access-key: \${{ secrets['SECRETSAWS_SECRET_ACCESS_ID'] }}
+          aws-region: ap-southeast-1
+
+      - name: Overwrite & Push PDF to AWS S3 (Singapore)
+        run: |
+          aws s3 cp ./public/dealer_ledge_594016.pdf s3://vatone/dealer_ledge_594016.pdf --acl public-read`;
+
+  const currentYaml = secretStyle === 'standard' ? standardYaml : fallbackYaml;
+
+  // Safe iFrame Clipboard Copy Fallback
+  const copyToClipboard = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        setCopiedText(true);
+        setTimeout(() => setCopiedText(false), 3000);
+      }
+    } catch (err) {
+      console.error('Copy failed', err);
+    }
+    document.body.removeChild(textArea);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#060913] text-slate-100 p-4 md:p-8 font-sans selection:bg-[#00ff66] selection:text-black">
+      <div className="max-w-4xl mx-auto space-y-6">
+        
+        {/* Main Banner */}
+        <div className="bg-gradient-to-r from-emerald-500/10 via-slate-900 to-[#00ff66]/5 border border-emerald-500/20 p-6 rounded-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-[#00ff66]/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[#00ff66] text-xs font-mono tracking-widest uppercase bg-[#00ff66]/10 px-2 py-0.5 rounded">
+                  DEPLOYMENT GUIDE
+                </span>
+                <span className="text-slate-400 text-xs font-mono">REPOSITORY ACTIVE</span>
+              </div>
+              <h1 className="text-2xl md:text-3xl font-extrabold text-white">
+                GitHub-S3 রিকনসিলিয়েশন গাইড 🚀
+              </h1>
+              <p className="text-slate-300 text-sm mt-1 leading-relaxed">
+                কোনো টার্মিনাল বা কমান্ড লাইনের কোডিং ছাড়াই সরাসরি ব্রাউজার থেকে কিভাবে গিটহাব অ্যাকশনস রান করাবে তার রোডম্যাপ।
+              </p>
+            </div>
+            
+            <a 
+              href={repoUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-[#00ff66] text-black hover:bg-[#00cc52] px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all shrink-0 shadow-[0_0_15px_rgba(0,255,102,0.2)]"
+            >
+              <ExternalLink className="h-4 w-4" />
+              রিপজিটরিতে যান 
+            </a>
+          </div>
+        </div>
+
+        {/* Wizard Steps Navigation */}
+        <div className="grid grid-cols-3 gap-2 border-b border-slate-800 pb-4">
+          {[
+            { step: 1, label: "১. গিটহাব সিক্রেটস", icon: Key },
+            { step: 2, label: "২. ওয়ার্কফ্লো ফাইল", icon: FileCode },
+            { step: 3, label: "৩. মাউস দিয়ে আপলোড", icon: UploadCloud }
+          ].map((item) => (
+            <button
+              key={item.step}
+              onClick={() => setActiveStep(item.step)}
+              className={`p-3 rounded-xl border text-left transition-all flex flex-col md:flex-row items-center gap-2.5 ${
+                activeStep === item.step 
+                  ? 'border-[#00ff66] bg-[#00ff66]/5 text-white' 
+                  : 'border-slate-800 bg-slate-950/40 text-slate-400 hover:border-slate-700'
+              }`}
+            >
+              <item.icon className={`h-5 w-5 ${activeStep === item.step ? 'text-[#00ff66]' : 'text-slate-500'}`} />
+              <span className="text-xs font-bold tracking-tight text-center md:text-left">{item.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* STEP 1: RESET SECRETS */}
+        {activeStep === 1 && (
+          <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 space-y-6">
+            <div className="flex gap-3 items-start">
+              <Key className="h-6 w-6 text-[#00ff66] shrink-0 mt-1" />
+              <div>
+                <h3 className="text-lg font-bold text-white">ধাপ ১: গিটহাব সিক্রেটস পরিষ্কার করা (সুপার রিকমেন্ডেড)</h3>
+                <p className="text-sm text-slate-400 mt-1">
+                  আগের বার সিক্রেট সেভ করার সময় নামের ভেতর টাইপো হয়েছিল। চলো এগুলোকে একদম ফ্রেশ আর প্রফেশনাল নাম দিয়ে আপডেট করে নিই যাতে কোনো ব্র্যাকেটের ঝামেলা না থাকে।
+                </p>
+              </div>
+            </div>
+
+            {/* Instruction list */}
+            <div className="bg-slate-950/80 p-4 rounded-xl border border-slate-850 space-y-3 text-sm text-slate-300">
+              <h4 className="text-xs uppercase font-mono text-amber-400 font-bold tracking-wider">কিভাবে ঠিক করবে:</h4>
+              <ol className="list-decimal list-inside space-y-2.5 leading-relaxed">
+                <li>
+                  প্রথমে গিটহাবের <a href={`${repoUrl}/settings/secrets/actions`} target="_blank" rel="noopener noreferrer" className="text-[#00ff66] underline hover:text-[#00cc52]">Settings - Secrets - Actions</a> পেজে যাও।
+                </li>
+                <li>
+                  আগের তৈরি করা <code className="text-rose-400 font-mono">secrets.AWS_ACCESS_KEY_ID</code> এবং <code className="text-rose-400 font-mono">SECRETSAWS_SECRET_ACCESS_ID</code> ডিলিট (Delete আইকন ক্লিক) করে দাও।
+                </li>
+                <li>
+                  এবার নতুন করে <span className="text-emerald-400 font-bold">New repository secret</span> বাটনে ক্লিক করে নিচের দুটি নাম ও ভ্যালু ক্রিয়েট করো:
+                </li>
+              </ol>
+            </div>
+
+            {/* Secret Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                <span className="text-[10px] font-mono text-slate-500 uppercase">১ম সিক্রেট এর নাম (Name)</span>
+                <div className="text-sm font-mono font-bold text-[#00ff66] bg-[#00ff66]/5 p-2 rounded border border-[#00ff66]/20 flex justify-between items-center">
+                  <span>AWS_ACCESS_KEY_ID</span>
+                </div>
+                <p className="text-xs text-slate-400">Value বক্সে: আমাজন (AWS) থেকে পাওয়া অ্যাক্সেস কি আইডি বসাও।</p>
+              </div>
+
+              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                <span className="text-[10px] font-mono text-slate-500 uppercase">২য় সিক্রেট এর নাম (Name)</span>
+                <div className="text-sm font-mono font-bold text-[#00ff66] bg-[#00ff66]/5 p-2 rounded border border-[#00ff66]/20 flex justify-between items-center">
+                  <span>AWS_SECRET_ACCESS_KEY</span>
+                </div>
+                <p className="text-xs text-slate-400">Value বক্সে: আমাজন থেকে পাওয়া বড় সিক্রেট চাবিটি বসাও।</p>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button 
+                onClick={() => setActiveStep(2)}
+                className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all"
+              >
+                ধাপ ২-এ যান <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 2: GET THE CODE */}
+        {activeStep === 2 && (
+          <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div className="flex gap-3 items-start">
+                <FileCode className="h-6 w-6 text-[#00ff66] shrink-0 mt-1" />
+                <div>
+                  <h3 className="text-lg font-bold text-white">ধাপ ২: পারফেক্ট গিটহাব অ্যাকশনস কোড কপি করো</h3>
+                  <p className="text-sm text-slate-400 mt-1">
+                    নিচের কোডটি সম্পূর্ণ কপি করে তোমার গিটহাবের এডিটরে পেস্ট করে দাও।
+                  </p>
+                </div>
+              </div>
+
+              {/* Secret selector to toggle YAML code style */}
+              <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
+                <button
+                  onClick={() => setSecretStyle('standard')}
+                  className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+                    secretStyle === 'standard' ? 'bg-[#00ff66] text-black font-bold' : 'text-slate-400'
+                  }`}
+                >
+                  স্ট্যান্ডার্ড সিক্রেট কোড (রিসেন্ট)
+                </button>
+                <button
+                  onClick={() => setSecretStyle('custom')}
+                  className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+                    secretStyle === 'custom' ? 'bg-[#00ff66] text-black font-bold' : 'text-slate-400'
+                  }`}
+                >
+                  পুরানো সিক্রেট কোড (মিক্সড)
+                </button>
+              </div>
+            </div>
+
+            {/* Code editor container */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs font-mono text-slate-500 bg-slate-950 p-3 rounded-t-xl border-t border-x border-slate-800">
+                <span>📂 .github/workflows/aws-s3-sync.yml</span>
+                <button
+                  onClick={() => copyToClipboard(currentYaml)}
+                  className="bg-slate-900 hover:bg-slate-800 text-slate-300 px-3 py-1.5 rounded flex items-center gap-1 transition-all border border-slate-800"
+                >
+                  {copiedText ? <Check className="h-3.5 w-3.5 text-[#00ff66]" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copiedText ? 'কপি হয়েছে!' : 'কোড কপি করুন'}
+                </button>
+              </div>
+              <pre className="bg-slate-950 p-4 rounded-b-xl text-xs font-mono text-slate-300 overflow-x-auto whitespace-pre border-b border-x border-slate-800 h-80 leading-relaxed">
+                {currentYaml}
+              </pre>
+            </div>
+
+            <div className="bg-[#00ff66]/5 border border-[#00ff66]/20 p-4 rounded-xl text-xs text-slate-300">
+              💡 <strong>টিপস:</strong> গিটহাবের ফাইলে এই কোডটি পেস্ট করার পর নিচে সবুজ <strong>Commit changes</strong> বাটনে চাপ দিলেই এটি সেভ হয়ে যাবে।
+            </div>
+
+            <div className="flex justify-between pt-2">
+              <button 
+                onClick={() => setActiveStep(1)}
+                className="text-slate-400 hover:text-white px-4 py-2 text-xs font-bold transition-all"
+              >
+                আগের ধাপে যান
+              </button>
+              <button 
+                onClick={() => setActiveStep(3)}
+                className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all"
+              >
+                ধাপ ৩-এ যান <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3: WEB UPLOAD EXPLAINER */}
+        {activeStep === 3 && (
+          <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 space-y-6">
+            <div className="flex gap-3 items-start">
+              <UploadCloud className="h-6 w-6 text-[#00ff66] shrink-0 mt-1" />
+              <div>
+                <h3 className="text-lg font-bold text-white">ধাপ ৩: কোনো গিট কমান্ড ছাড়া সরাসরি ওয়েবসাইট দিয়ে পিডিএফ আপলোড</h3>
+                <p className="text-sm text-slate-400 mt-1">
+                  টার্মিনালের জটিলতা এড়াতে গিটহাব ওয়েবসাইটে মাউস দিয়ে ড্রাগ-এন্ড-ড্রপ করে সরাসরি ফাইল আপডেট করার সবচেয়ে সহজ মেথড এটি:
+                </p>
+              </div>
+            </div>
+
+            {/* Step cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              <div className="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 relative overflow-hidden">
+                <span className="absolute top-2 right-2 text-3xl font-extrabold text-slate-900 font-mono">1</span>
+                <FolderOpen className="h-8 w-8 text-[#00ff66]" />
+                <h4 className="font-bold text-sm text-white">ফোল্ডারে যাও</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  গিটহাবে তোমার রিপজিটরির ভেতর থেকে <code className="text-emerald-400">public/</code> ফোল্ডারে ক্লিক করে প্রবেশ করো।
+                </p>
+              </div>
+
+              <div className="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 relative overflow-hidden">
+                <span className="absolute top-2 right-2 text-3xl font-extrabold text-slate-900 font-mono">2</span>
+                <MousePointer className="h-8 w-8 text-sky-400" />
+                <h4 className="font-bold text-sm text-white">ফাইল আপলোড করো</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  ডানদিকের <span className="text-sky-400 font-semibold">Add file ➔ Upload files</span> বাটনে ক্লিক করে তোমার কম্পিউটারের নতুন <code className="text-sky-300">dealer_ledge_594016.pdf</code> ফাইলটি মাউস দিয়ে টেনে এনে ছেড়ে দাও।
+                </p>
+              </div>
+
+              <div className="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 relative overflow-hidden">
+                <span className="absolute top-2 right-2 text-3xl font-extrabold text-slate-900 font-mono">3</span>
+                <CheckCircle className="h-8 w-8 text-emerald-400" />
+                <h4 className="font-bold text-sm text-white">সেভ করো ও ম্যাজিক দেখো!</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  নিচে সবুজ <span className="text-emerald-400 font-semibold">Commit changes</span> বাটনে ক্লিক করলেই গিটহাব অ্যাকশনস নিজে থেকে রান হয়ে ফাইল আমাজন সিঙ্গাপুরে পাঠিয়ে দেবে!
+                </p>
+              </div>
+
+            </div>
+
+            {/* Direct Link Alert */}
+            <div className="bg-blue-500/5 border border-blue-500/25 p-4 rounded-xl flex gap-3 items-center">
+              <Sparkles className="h-5 w-5 text-sky-400 shrink-0" />
+              <div className="text-xs text-slate-300 leading-relaxed">
+                তুমি ডিরেক্ট এই লিংকে ক্লিক করেই ফাইলে চলে যেতে পারবে: <a href={`${repoUrl}/tree/main/public`} target="_blank" rel="noopener noreferrer" className="text-[#00ff66] underline font-bold hover:text-[#00cc52]">পাবলিক ফোল্ডার লিংক ➔</a>
+              </div>
+            </div>
+
+            <div className="flex justify-between pt-2">
+              <button 
+                onClick={() => setActiveStep(2)}
+                className="text-slate-400 hover:text-white px-4 py-2 text-xs font-bold transition-all"
+              >
+                আগের ধাপে যান
+              </button>
+              <div className="text-xs text-slate-500 font-mono flex items-center gap-1.5">
+                <CheckCircle className="h-4 w-4 text-[#00ff66]" /> সব কাজ শেষ!
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
