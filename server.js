@@ -1,6 +1,8 @@
-const express = require('express');
+const express = require('express'); // 'const' ছোট হাতের করা হয়েছে
 const path = require('path');
 const app = express();
+
+// Render স্বয়ংক্রিয়ভাবে PORT অ্যাসাইন করবে, না পেলে 3000
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
@@ -11,7 +13,7 @@ app.use(express.static(__dirname));
 // জেমিনি এআই অ্যানালিটিক্স এন্ডপয়েন্ট
 app.post('/api/gemini-insight', async (req, res) => {
     try {
-        // ড্যাশবোর্ডের ফিন্যান্সিয়াল ডেটা
+        // ড্যাশবোর্ডের ফিন্যান্সিয়াল ডেটা (ভবিষ্যতে এটি ERP/DBBL থেকে ডাইনামিক আসবে)
         const data = {
             totalSales: 28649996.98,
             totalPaid: 22221029.92,
@@ -20,7 +22,6 @@ app.post('/api/gemini-insight', async (req, res) => {
         };
 
         // এখানে আপনার জেমিনি এআই ইঞ্জিন বা কাস্টম প্রম্পটের লজিক বসবে
-        // আপাতত একটি ডাইনামিক অ্যানালিটিক্যাল রেসপন্স পাঠানো হচ্ছে:
         const insight = `🤖 Salsabilah Amin Ltd. - Gemini AI Financial Report:
 
 1. Cash Flow Alert: আপনার মোট পারচেজ (৳30.02M) মোট সেলস (৳28.64M) এর চেয়ে বেশি। অর্থাৎ ইনভেন্টরিতে ক্যাশ ব্লক হয়ে আছে।
@@ -33,10 +34,12 @@ app.post('/api/gemini-insight', async (req, res) => {
     }
 });
 
+// ক্যাচ-অল রাউট (সবসময় index.html রিটার্ন করবে)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, () => {
-    console.log(`ERP Engine running on port ${PORT}`);
+// Render-এর জন্য 0.0.0.0 হোস্ট বাইন্ডিং করা হলো
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 ERP Engine successfully running on port ${PORT}`);
 });
