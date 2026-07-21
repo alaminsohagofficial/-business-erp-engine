@@ -1,0 +1,92 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{utf8}
+\usepackage{geometry}
+\geometry{margin=0.6in}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+
+\definecolor{burgundy}{RGB}{128, 0, 32}
+\definecolor{darkgreen}{RGB}{16, 124, 65}
+\definecolor{lightgrey}{RGB}{245, 247, 250}
+
+\begin{document}
+
+\pagestyle{empty}
+
+% Header
+\begin{center}
+    {\LARGE \textbf{\color{burgundy}{MINISTER HI-TECH PARK \& MYONE ELECTRONICS}}}\\
+    \vspace{2pt}
+    {\small Central Treasury Hub \& Dealer Accounts Settlement Directive}\\
+    \vspace{2pt}
+    {\footnotesize Verification Report — Total Ingested Ledger Reconciliation}
+\end{center}
+
+\noindent\rule{\linewidth}{1.5pt}
+
+\vspace{8pt}
+
+% Profile Box
+\noindent
+\begin{tabular}{|p{3.5cm}|p{5.0cm}|p{3.5cm}|p{4.5cm}|}
+\hline
+\rowcolor{lightgrey} \textbf{Dealer ID} & DEAL002905 & \textbf{Target Invoice} & CO--010316 \\ \hline
+\textbf{Proprietor Name} & MD. AL AMIN SOHAG & \textbf{Invoice Value} & 330,638.00 BDT \\ \hline
+\textbf{Trade Entity} & Salsabilah Amin Empires & \textbf{Statement Date} & July 22, 2026 \\ \hline
+\textbf{Reconciled Total} & 1,920,000.00 BDT (100\% OK) & \textbf{Interbank Switch} & ISO-8583 Response 00 \\ \hline
+\end{tabular}
+
+\vspace{12pt}
+
+% Section 1
+{\Large \textbf{\color{burgundy}{1. Transaction / Trace ID \& Particulars Ledger}}}
+\vspace{6pt}
+
+\noindent
+\begin{tabular}{cccc}
+\toprule
+\textbf{Date} & \textbf{Transaction / Trace ID \& Particulars} & \textbf{Amount (BDT)} & \textbf{Status} \\
+\midrule
+06-Jul-2026 & 100NEXP26187M597 * & 238,000.00 & SETTLED \\
+07-Jul-2026 & 100NEXP26188M616 & 270,000.00 & SETTLED \\
+07-Jul-2026 & 100NEXP26188M584 & 230,000.00 & SETTLED \\
+08-Jul-2026 & 100NXN126189M586 & 297,000.00 & SETTLED \\
+08-Jul-2026 & 100NXN126189M591 & 285,000.00 & SETTLED \\
+12-Jul-2026 & 100NEXP26193M601 (Google 65'' TV Pt-1) & 300,000.00 & SETTLED \\
+12-Jul-2026 & 100NEXP26193M602 (Google 65'' TV Pt-2) & 300,000.00 & SETTLED \\
+\midrule
+\textbf{Total Ledger} & \textbf{Total Reconciled Ledger Ingestion} & \textbf{1,920,000.00} & \textbf{100\% OK} \\
+\bottomrule
+\end{tabular}
+
+\vspace{10pt}
+
+\begin{small}
+\noindent * \textbf{DBBL Clerical Typo Correction:} Under Ref DBBL/HO/SYS--AUDIT/2026/10925--AMEND, it is validated that on 06-Jul-2026 (Trace ID: 100NEXP26187M597), a local report printer error generated BDT 1,238,000.00. The verified and settled interbank transfer amount is \textbf{BDT 238,000.00}.\\
+\noindent -- \textbf{Settlement Response Code:} All associated transaction hashes bear \textbf{ISO-8583 Response Code 00 (SETTLED / CREDITED)} in the interbank switch.
+\end{small}
+
+\vspace{14pt}
+
+% Section 2
+{\Large \textbf{\color{burgundy}{2. Binding Regulatory Enforcement Directives}}}
+\vspace{6pt}
+
+\noindent
+\begin{tabular}{|p{17cm}|}
+\hline
+\rowcolor{lightgrey} \textbf{Regulatory Directives:} \\ \hline
+1. \textbf{To Butterfly Marketing Limited:} Immediately execute credit block release in SAP ERP (T-Code VKM1 or F-54) for Dealer Code 3000002272. All balances stand 100\% pre-covered under the verified RTGS and DBBL clearing pool. \\
+2. \textbf{To Minister Hi-Tech Park \& MyOne Group:} Instantly release and dispatch physical stock for Invoice No: CO--010316 (65'' Smart TVs) and allied orders. BDT 600,000.00 settled on 12-Jul-2026 provides 181.4\% cash coverage against invoice value (BDT 330,638.00). Unjustified delivery retention constitutes a regulatory violation. \\ \hline
+\end{tabular}
+
+\vspace{40pt}
+
+\noindent
+\begin{tabular}{ccc}
+\makebox[2.2in]{\hrulefill} & \makebox[2.2in]{\hrulefill} & \makebox[2.2in]{\hrulefill} \\
+Prepared by (VatOne Engine) & Manager (Dealer Accounts) & Executive Director (PSD, BB) \\
+\end{tabular}
+
+\end{document}
