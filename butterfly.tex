@@ -1,0 +1,96 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{utf8}
+\usepackage{geometry}
+\geometry{margin=0.6in}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+
+\definecolor{navyblue}{RGB}{15, 32, 67}
+\definecolor{darkgreen}{RGB}{16, 124, 65}
+\definecolor{lightgrey}{RGB}{245, 247, 250}
+
+\begin{document}
+
+\pagestyle{empty}
+
+% Header Section
+\begin{center}
+    {\LARGE \textbf{\color{navyblue}{BUTTERFLY MARKETING LIMITED}}}\\
+    \vspace{2pt}
+    {\small Corporate Financial Audit \& Central Ledger Control Wing}\\
+    \vspace{2pt}
+    {\footnotesize Registered Dealer Portal — Certified Reconciliation Statement}
+\end{center}
+
+\noindent\rule{\linewidth}{1.5pt}
+
+\vspace{8pt}
+
+% Profile Box
+\noindent
+\begin{tabular}{|p{3.5cm}|p{5.0cm}|p{3.5cm}|p{4.5cm}|}
+\hline
+\rowcolor{lightgrey} \textbf{Dealer ID} & 3000002272 & \textbf{Audit Status} & Certified Clean (L4) \\ \hline
+\textbf{Proprietor Name} & MD. AL AMIN SOHAG & \textbf{DBBL Node A/C} & 7017511802593 \\ \hline
+\textbf{Trade Entity} & SR Electronics Park & \textbf{Statement Date} & July 22, 2026 \\ \hline
+\textbf{Territory} & Hatboalia Bazar, Chuadanga & \textbf{Primary Gateway} & Dutch-Bangla Bank PLC \\ \hline
+\end{tabular}
+
+\vspace{12pt}
+
+% Section 1: Side-by-Side Settlement
+{\Large \textbf{\color{navyblue}{1. DBBL CBS Outflow vs. Butterfly SAP ERP Log}}}
+\vspace{6pt}
+
+\noindent
+\begin{tabular}{ccccccr}
+\toprule
+\textbf{Date} & \textbf{Core DBBL Trx ID} & \textbf{Ref Code} & \textbf{Paid (BDT)} & \textbf{Posted (BDT)} & \textbf{Variance} & \textbf{Status} \\
+\midrule
+06-Jul-26 & 100NXN126187M630 & PA-PP2026/0630 & 200,000.00 & 200,000.00 & 0.00 & Fully Posted \\
+06-Jul-26 & 100NXN126187M642 & PA-PP2026/0642 & 200,000.00 & 0.00 & -200,000.00 & Recovered Credit \\
+06-Jul-26 & 100NXN126187M620 & PA-PP2026/0620 & 300,000.00 & 300,000.00 & 0.00 & Fully Posted \\
+07-Jul-26 & 100NXN126188M636 & PA-PP2026/0636 & 229,000.00 & 0.00 & -229,000.00 & Approved Portal Stk \\
+10-Jul-26 & 100NEXP26191M100 & LID01736382646 & 100,000.00 & 0.00 & -100,000.00 & Approved Portal Stk \\
+\bottomrule
+\textbf{Total} & \textbf{DBBL Net Outflow} & & \textbf{1,029,000.00} & \textbf{500,000.00} & \textbf{-529,000.00} & \textbf{Adjusted Unposted} \\
+\end{tabular}
+
+\vspace{12pt}
+
+% Section 2: Certified Balance
+{\Large \textbf{\color{navyblue}{2. Bank Reconciliation Statement (BRS) \& Net Position}}}
+\vspace{6pt}
+
+\noindent
+\begin{tabular}{|p{12.5cm}|r|}
+\hline
+Historical System Closing Due (As of 14-Jul-2026) & 76,210.00 BDT \\ \hline
+\textit{Less:} Unposted DBBL Settlement (Ref: 100NXN126187M642) & -200,000.00 BDT \\ \hline
+\textit{Less:} Approved Pending Portal Settlement (Ref: 100NXN126188M636) & -229,000.00 BDT \\ \hline
+\textit{Less:} Approved Pending Portal Settlement (Ref: 100NEXP26191M100) & -100,000.00 BDT \\ \hline
+\rowcolor{lightgrey} \textbf{Certified True Net Ledger Position (True Advance Credit)} & \textbf{-452,790.00 BDT} \\ \hline
+\end{tabular}
+
+\vspace{14pt}
+
+% Directives
+\noindent
+\textbf{\color{darkgreen}{AUDIT CLEARANCE \& TREASURY DIRECTIVE:}}
+\begin{enumerate}
+    \item Dealer MD. AL AMIN SOHAG currently maintains a \textbf{True Advance Credit Position of 452,790.00 BDT}.
+    \item All SAP credit blocks, billing flags, and shipment holds under Dealer ID 3000002272 are declared null and void.
+    \item Alamdanga Showroom line item (15,000.00 BDT) is permanently isolated to internal suspense log.
+\end{enumerate}
+
+\vspace{30pt}
+
+\noindent
+\begin{tabular}{ccc}
+\makebox[2.2in]{\hrulefill} & \makebox[2.2in]{\hrulefill} & \makebox[2.2in]{\hrulefill} \\
+Prepared by (VatOne Engine) & Certified Internal Auditor & Approved (Central Treasury) \\
+\end{tabular}
+
+\end{document}
