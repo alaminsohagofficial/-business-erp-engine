@@ -1,14 +1,23 @@
 const express = require('express');
 const path = require('path');
-const app = express();
+const cors = require('cors');
 
+const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware Setup
+app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
+// Import Dynamic Reconciliation Routes
+const reconciliationRoutes = require('./routes/reconciliationRoutes');
+
+// Dynamic POST API Route Registration
+app.use('/api/reconcile', reconciliationRoutes);
+
 // ==========================================
-// ১. মিনিস্টার (Minister MyOne Group) - SAP LID ম্যাপিং সহ API
+// ১. মিনিস্টার (Minister MyOne Group) - SAP LID ম্যাপিং সহ GET API
 // ==========================================
 app.get('/api/reconcile/minister', (req, res) => {
     const ministerLidLedger = [
@@ -35,7 +44,7 @@ app.get('/api/reconcile/minister', (req, res) => {
 });
 
 // ==========================================
-// ২. বাটারফ্লাই (Butterfly Marketing Ltd) - Narration & Ref সহ API
+// ২. বাটারফ্লাই (Butterfly Marketing Ltd) - Narration & Ref সহ GET API
 // ==========================================
 app.get('/api/reconcile/butterfly', (req, res) => {
     const butterflyLedger = [
