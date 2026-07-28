@@ -1,8 +1,11 @@
 services:
   - type: web
     name: business-erp-engine
-    runtime: node
+    env: node
     plan: free
     region: singapore
     buildCommand: npm install
-    startCommand: node server.js
+    startCommand: node server.js # আপনার ফাইলে মূল ব্যাকএন্ড ফিক্সড ফাইলটির নাম নিশ্চিত করুন (e.g., server.js)
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
