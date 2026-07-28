@@ -4,70 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Butterfly ERP & DBBL Smart Reconciliation Engine</title>
-    <!-- Tailwind CSS (Direct Secure CDN) -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Premium Google Fonts -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;700&display=swap" rel="stylesheet">
-    
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', 'Noto Sans Bengali', sans-serif;
-        }
-        .code-font {
-            font-family: 'JetBrains Mono', monospace;
-        }
+        body { font-family: 'Plus Jakarta Sans', 'Noto Sans Bengali', sans-serif; }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
         @media print {
             .no-print { display: none !important; }
-            .print-layout { 
-                background: white !important; 
-                color: black !important; 
-                padding: 0 !important; 
-                margin: 0 !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
+            .print-layout { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; border: none !important; }
         }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white flex flex-col">
 
-    <!-- Header bar (Hidden on Print) -->
+    <!-- Navigation Header -->
     <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40 no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <span class="bg-blue-600 text-white font-extrabold px-3 py-1.5 rounded-lg text-sm tracking-wider">
-                    BML-SYNC
-                </span>
+                <span class="bg-blue-600 text-white font-extrabold px-3 py-1.5 rounded-lg text-sm tracking-wider">BML-SYNC</span>
                 <div>
                     <h1 class="font-bold text-sm text-slate-100">VatOne ERP & DBBL Reconciliation Console</h1>
                     <p class="text-[10px] text-slate-400">Authorized Access Node: BML-HQ-CHG-05</p>
                 </div>
             </div>
             
-            <!-- Secure Mode Toggle -->
-            <div class="flex items-center gap-2 bg-slate-800 p-1 rounded-xl border border-slate-700">
-                <button onclick="setEngineMode('exam')" id="mode-exam-btn" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-amber-600 text-white">
-                    Abu Bakar Exam Mode
-                </button>
-                <button onclick="setEngineMode('master')" id="mode-master-btn" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
-                    Director Cockpit
-                </button>
+            <div class="flex items-center gap-3">
+                <a href="concordance.html" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700">
+                    📊 View Both Ledger Tables
+                </a>
+                <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700">
+                    <button onclick="setEngineMode('exam')" id="mode-exam-btn" class="px-3 py-1 rounded-lg text-xs font-bold transition-all bg-amber-600 text-white">Abu Bakar Mode</button>
+                    <button onclick="setEngineMode('master')" id="mode-master-btn" class="px-3 py-1 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">Director Cockpit</button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Container -->
+    <!-- Main Body Container -->
     <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-
-        <!-- Split Interface: Controls and Live Document View -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- Left Side: Interactive Portal & Audit Input (No-Print) -->
+            <!-- Audit Form Panel -->
             <div class="lg:col-span-5 space-y-6 no-print">
-                
-                <!-- Welcome & System Instructions -->
                 <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
                     <h2 class="text-base font-bold text-slate-100 mb-2 flex items-center gap-2">
                         <span class="flex h-2.5 w-2.5 relative">
@@ -77,96 +59,59 @@
                         Reconciliation Command Console
                     </h2>
                     <p id="system-instructions" class="text-xs text-slate-400 leading-relaxed">
-                        To pass the audit challenge and unlock the delivery gate-pass for the 65-inch Google TV, reconcile the ERP ledger by locating and inputting the missing banking entries.
+                        To pass the audit challenge and unlock the delivery gate-pass, reconcile the ERP ledger by inputting the missing banking entries.
                     </p>
                 </div>
 
-                <!-- Live Input Assessment Form -->
                 <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-2">
-                        Audit Discrepancy Entry Form
-                    </h3>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-2">Audit Discrepancy Entry Form</h3>
                     
-                    <!-- Input 1 -->
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-medium text-slate-300">
-                            1. Unposted July 6th Credit (Trx: ...M642)
-                        </label>
+                        <label class="block text-xs font-medium text-slate-300">1. Unposted July 6th Credit (Trx: ...M642)</label>
                         <div class="relative rounded-lg shadow-sm">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 text-xs">BDT</span>
-                            <input type="number" id="inp-trx1" oninput="verifyReconciliation()" placeholder="0.00" 
-                                class="block w-full pl-12 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-semibold focus:outline-none focus:border-blue-500 text-white code-font">
+                            <input type="number" id="inp-trx1" oninput="verifyReconciliation()" placeholder="0.00" class="block w-full pl-12 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-semibold focus:outline-none focus:border-blue-500 text-white code-font">
                         </div>
                     </div>
 
-                    <!-- Input 2 -->
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-medium text-slate-300">
-                            2. Pending July 7th Portal Payment (Trx: ...M636)
-                        </label>
+                        <label class="block text-xs font-medium text-slate-300">2. Pending July 7th Portal Payment (Trx: ...M636)</label>
                         <div class="relative rounded-lg shadow-sm">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 text-xs">BDT</span>
-                            <input type="number" id="inp-trx2" oninput="verifyReconciliation()" placeholder="0.00" 
-                                class="block w-full pl-12 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-semibold focus:outline-none focus:border-blue-500 text-white code-font">
+                            <input type="number" id="inp-trx2" oninput="verifyReconciliation()" placeholder="0.00" class="block w-full pl-12 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-semibold focus:outline-none focus:border-blue-500 text-white code-font">
                         </div>
                     </div>
 
-                    <!-- Input 3 -->
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-medium text-slate-300">
-                            3. Pending July 10th NexusPay (Trx: ...M100)
-                        </label>
+                        <label class="block text-xs font-medium text-slate-300">3. Pending July 10th NexusPay (Trx: ...M100)</label>
                         <div class="relative rounded-lg shadow-sm">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 text-xs">BDT</span>
-                            <input type="number" id="inp-trx3" oninput="verifyReconciliation()" placeholder="0.00" 
-                                class="block w-full pl-12 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-semibold focus:outline-none focus:border-blue-500 text-white code-font">
+                            <input type="number" id="inp-trx3" oninput="verifyReconciliation()" placeholder="0.00" class="block w-full pl-12 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-semibold focus:outline-none focus:border-blue-500 text-white code-font">
                         </div>
                     </div>
 
-                    <!-- Test Verdict Notification -->
                     <div id="test-verdict-box" class="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2.5 transition-all">
                         <span class="text-amber-500 mt-0.5 font-bold">⚠️</span>
                         <div>
                             <h5 id="verdict-title" class="text-xs font-bold text-amber-400">LEDGER STATE: OUTSTANDING DUE</h5>
-                            <p id="verdict-desc" class="text-[10px] text-slate-400 leading-relaxed mt-0.5">
-                                Current Ledger indicates BDT 76,210.00 outstanding. Complete the matching values from the bank statement to clear the block.
-                            </p>
+                            <p id="verdict-desc" class="text-[10px] text-slate-400 leading-relaxed mt-0.5">Current Ledger indicates BDT 76,210.00 outstanding. Complete the matching values from the bank statement to clear the block.</p>
                         </div>
                     </div>
                     
-                    <!-- Print Button Container -->
                     <div class="pt-2">
-                        <button onclick="triggerPrint()" id="print-doc-btn" disabled 
-                            class="w-full bg-slate-800 text-slate-500 font-extrabold text-xs py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-not-allowed">
+                        <button onclick="triggerPrint()" id="print-doc-btn" disabled class="w-full bg-slate-800 text-slate-500 font-extrabold text-xs py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-not-allowed">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                             Print Official Certificate (Locked)
                         </button>
                     </div>
                 </div>
-
-                <!-- Raw Bank Evidence Assistant -->
-                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-                        DBBL Verified Electronic Outward Settlements
-                    </h4>
-                    <div class="space-y-2 text-[10px] text-slate-400 leading-relaxed">
-                        <p class="p-2.5 bg-slate-950 rounded-lg border border-slate-850"><span class="font-bold text-slate-300">06-Jul:</span> 3 distinct transactions executed: BDT 200k, BDT 200k, BDT 300k. Verify ledger representation against actual bank outflow.</p>
-                        <p class="p-2.5 bg-slate-950 rounded-lg border border-slate-850"><span class="font-bold text-slate-300">07-Jul:</span> NexusPay EFT BDT 229,000.00 settled. ERP state: Pending Central Approval.</p>
-                        <p class="p-2.5 bg-slate-950 rounded-lg border border-slate-850"><span class="font-bold text-slate-300">10-Jul:</span> NexusPay BDT 100,000.00 settled via ID: LID01736382646.</p>
-                    </div>
-                </div>
             </div>
 
-            <!-- Right Side: Live Document Render Engine (Standard Print Output) -->
+            <!-- Printable Certificate View -->
             <div class="lg:col-span-7">
                 <div id="print-area" class="bg-white text-slate-900 p-8 md:p-12 rounded-2xl border border-slate-200 shadow-xl print-layout relative overflow-hidden">
-                    
-                    <!-- Passed Stamp (Hidden by default, shown when verified) -->
-                    <div id="reconciled-stamp" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-4 border-emerald-600 text-emerald-600 font-black text-xs uppercase tracking-widest px-4 py-2 rounded-lg rotate-12 bg-white/90 shadow-lg z-10 transition-all opacity-0 pointer-events-none">
-                        Reconciliation Passed & Certified
-                    </div>
+                    <div id="reconciled-stamp" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-4 border-emerald-600 text-emerald-600 font-black text-xs uppercase tracking-widest px-4 py-2 rounded-lg rotate-12 bg-white/90 shadow-lg z-10 transition-all opacity-0 pointer-events-none">Reconciliation Passed & Certified</div>
 
-                    <!-- Document Brand Header -->
                     <div class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-900 pb-5 mb-6 gap-4">
                         <div>
                             <h2 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">BUTTERFLY MARKETING LIMITED</h2>
@@ -176,17 +121,15 @@
                         <div class="text-left sm:text-right">
                             <span class="inline-block bg-slate-100 text-slate-800 text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-1.5">LEDGER AUDIT STATEMENT</span>
                             <p class="text-[10px] text-slate-500"><span class="font-bold">Doc Ref:</span> BML/AUD/MDAS/2026/091</p>
-                            <p class="text-[10px] text-slate-500"><span class="font-bold">System Date:</span> July 18, 2026</p>
+                            <p class="text-[10px] text-slate-500"><span class="font-bold">System Date:</span> July 29, 2026</p>
                         </div>
                     </div>
 
-                    <!-- Metadata Grid -->
                     <div class="grid grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 mb-6 text-[10px] md:text-xs">
                         <div>
                             <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Customer Account Profile</p>
                             <p class="font-extrabold text-slate-900">MD. AL AMIN SOHAG</p>
                             <p class="text-slate-600">Proprietor, SR Electronics Park</p>
-                            <p class="text-slate-500">Hatboalia Bazar 05, Chuadanga</p>
                         </div>
                         <div class="text-right">
                             <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">System Audit Sync</p>
@@ -195,7 +138,6 @@
                         </div>
                     </div>
 
-                    <!-- Ledger Table -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-[10px] md:text-xs">
                             <thead>
@@ -215,24 +157,6 @@
                                     <td class="py-2 px-3 text-right font-bold text-slate-900">575,538.00</td>
                                 </tr>
                                 <tr>
-                                    <td class="py-2 px-3">07.03.2026</td>
-                                    <td class="py-2 px-3">1400429992</td>
-                                    <td class="py-2 px-3">DZ</td>
-                                    <td class="py-2 px-3 text-right">-20,000.00</td>
-                                    <td class="py-2 px-3 text-right">--</td>
-                                    <td class="py-2 px-3">COLLECTION (DBBL) - Ref: 28228</td>
-                                    <td class="py-2 px-3 text-right">555,538.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-3">07.03.2026</td>
-                                    <td class="py-2 px-3">4400115798</td>
-                                    <td class="py-2 px-3">DS</td>
-                                    <td class="py-2 px-3 text-right">--</td>
-                                    <td class="py-2 px-3 text-right">1,000.00</td>
-                                    <td class="py-2 px-3">SALE INVOICE</td>
-                                    <td class="py-2 px-3 text-right">556,538.00</td>
-                                </tr>
-                                <tr>
                                     <td class="py-2 px-3">06.07.2026</td>
                                     <td class="py-2 px-3">1400007022</td>
                                     <td class="py-2 px-3">DZ</td>
@@ -250,7 +174,6 @@
                                     <td class="py-2 px-3">ERP SPLIT POSTING DEPOSIT (Ref: 29699)</td>
                                     <td class="py-2 px-3 text-right font-extrabold text-red-600">76,210.00</td>
                                 </tr>
-                                <!-- Dynamic Reconciliation Injection Point -->
                                 <tr id="dyn-row-1" class="hidden bg-emerald-50/50">
                                     <td class="py-2 px-3 font-semibold text-emerald-900">10.07.2026</td>
                                     <td class="py-2 px-3 text-emerald-900">1400009956</td>
@@ -282,16 +205,15 @@
                         </table>
                     </div>
 
-                    <!-- BRS & Verified Balance Box -->
                     <div class="border border-slate-300 rounded-lg overflow-hidden my-6">
                         <div class="bg-slate-900 text-white p-3 font-bold text-xs uppercase tracking-wider flex justify-between items-center">
-                            <span>Balance Reconciliation Analysis Summary</span>
+                            <span>Balance Reconciliation Summary</span>
                             <span id="final-balance-flag" class="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded">OUTSTANDING DUE</span>
                         </div>
                         <div class="p-5 bg-slate-50 text-slate-800 text-xs sm:text-sm space-y-2.5">
                             <div class="flex justify-between font-bold border-b pb-2">
                                 <span>ERP Database Outstanding Balance:</span>
-                                <span id="erp-base-due-text">BDT 76,210.00 (Outstanding Due)</span>
+                                <span>BDT 76,210.00 (Outstanding Due)</span>
                             </div>
                             <div class="flex justify-between text-xs text-slate-600">
                                 <span>Less: Verified Missing Credit on 06-Jul-2026 (Ref: 100NXN126187M642)</span>
@@ -311,43 +233,11 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Audit Compliance Statement -->
-                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg text-[10px] text-slate-600 leading-relaxed space-y-1.5">
-                        <p class="font-bold text-slate-900 uppercase tracking-wider text-[9px]">Executive Compliance Release Directive:</p>
-                        <p>1. The Central Finance and Internal Audit Control Wing certifies that all isolated suspicious transactions from the Alamdanga Showroom (BDT 15,000.00) are quarantined and completely omitted from MD. AL AMIN SOHAG's personal account ledger.</p>
-                        <p id="release-directive-txt">2. Ledger state holds unverified liabilities. Delivery flags and automated gate-passes for the 65-inch Google TV remain locked.</p>
-                    </div>
-
-                    <!-- Signature Grid -->
-                    <div class="grid grid-cols-3 gap-6 pt-16 text-center text-[10px] text-slate-500 mt-6">
-                        <div class="flex flex-col items-center">
-                            <div class="w-full border-t border-slate-300 pt-2 font-bold text-slate-700">Prepared & Synced</div>
-                            <div>ERP Financial Desk</div>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <div class="w-full border-t border-slate-300 pt-2 font-bold text-slate-700">Verified & Certified</div>
-                            <div>Head of Internal Audit Wing</div>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <div class="w-full border-t border-slate-300 pt-2 font-bold text-slate-700">Approved</div>
-                            <div>Office of the Director</div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
-
         </div>
-
     </main>
 
-    <!-- Footer (No-Print) -->
-    <footer class="border-t border-slate-800 py-6 bg-slate-900/50 text-center text-xs text-slate-500 no-print">
-        <p>© 2026 Butterfly Marketing Limited & Dutch-Bangla Bank PLC. Sync Engine Sandbox Node.</p>
-    </footer>
-
-    <!-- Interactive Logic Controller -->
     <script>
         let currentMode = 'exam';
         const targetAnswers = { trx1: 200000, trx2: 229000, trx3: 100000 };
@@ -358,23 +248,20 @@
             currentMode = mode;
             const btnExam = document.getElementById('mode-exam-btn');
             const btnMaster = document.getElementById('mode-master-btn');
-            const instText = document.getElementById('system-instructions');
             const inp1 = document.getElementById('inp-trx1');
             const inp2 = document.getElementById('inp-trx2');
             const inp3 = document.getElementById('inp-trx3');
 
             if (mode === 'master') {
-                btnMaster.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white';
-                btnExam.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white';
-                instText.innerText = "Director's Cockpit Active. System exhibits verified state (Sync Level 4). All entries have been forced-approved via core admin privileges.";
+                btnMaster.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white';
+                btnExam.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white';
                 inp1.value = targetAnswers.trx1;
                 inp2.value = targetAnswers.trx2;
                 inp3.value = targetAnswers.trx3;
                 inp1.disabled = true; inp2.disabled = true; inp3.disabled = true;
             } else {
-                btnExam.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-amber-600 text-white';
-                btnMaster.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white';
-                instText.innerText = "Abu Bakar Exam Mode Active. Enter the missing payments discovered from the DBBL statement copy to balance MD. Al Amin Sohag's account ledger.";
+                btnExam.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all bg-amber-600 text-white';
+                btnMaster.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white';
                 inp1.value = ''; inp2.value = ''; inp3.value = '';
                 inp1.disabled = false; inp2.disabled = false; inp3.disabled = false;
             }
@@ -404,71 +291,41 @@
                 verdictBox.className = "p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-2.5 transition-all";
                 verdictTitle.className = "text-xs font-bold text-emerald-400 uppercase";
                 verdictTitle.innerText = "LEDGER STATE: RECONCILED (TRUE ADVANCE)";
-                verdictDesc.innerText = "Reconciliation audit complete. Outstanding bill has been completely dropped to BDT 0.00. Genuine credit verified. Printing authorized.";
+                verdictDesc.innerText = "Reconciliation audit complete. BDT 0.00 balance reached.";
                 printBtn.disabled = false;
-                printBtn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs py-3 rounded-xl transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 cursor-pointer";
+                printBtn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs py-3 rounded-xl shadow-lg cursor-pointer";
                 printBtn.innerText = "Print Official Certificate (UNLOCKED)";
                 stamp.style.opacity = "1";
             } else {
                 verdictBox.className = "p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2.5 transition-all";
                 verdictTitle.className = "text-xs font-bold text-amber-400 uppercase";
                 verdictTitle.innerText = "LEDGER STATE: OUTSTANDING DUE";
-                verdictDesc.innerText = `Reconciling process active. Total validated offset credit: BDT ${verifiedCreditTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}. Missing balance remains locked.`;
+                verdictDesc.innerText = `Total validated credit: BDT ${verifiedCreditTotal.toLocaleString()}. Balance remains locked.`;
                 printBtn.disabled = true;
-                printBtn.className = "w-full bg-slate-800 text-slate-500 font-extrabold text-xs py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-not-allowed";
+                printBtn.className = "w-full bg-slate-800 text-slate-500 font-extrabold text-xs py-3 rounded-xl cursor-not-allowed";
                 printBtn.innerText = "Print Official Certificate (Locked)";
                 stamp.style.opacity = "0";
             }
         }
 
         function updatePDFDisplay(v1, v2, v3, finalBalance) {
-            const row1 = document.getElementById('dyn-row-1');
-            const r1Val = document.getElementById('dyn-row-1-val');
-            const r1Bal = document.getElementById('dyn-row-1-bal');
-            if (v3 > 0) {
-                row1.classList.remove('hidden');
-                r1Val.innerText = `-${v3.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-                r1Bal.innerText = (76210 - v3).toLocaleString('en-US', {minimumFractionDigits: 2});
-            } else { row1.classList.add('hidden'); }
-
-            const row2 = document.getElementById('dyn-row-2');
-            const r2Val = document.getElementById('dyn-row-2-val');
-            const r2Bal = document.getElementById('dyn-row-2-bal');
-            if (v2 > 0) {
-                row2.classList.remove('hidden');
-                r2Val.innerText = `-${v2.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-                r2Bal.innerText = (76210 - v3 - v2).toLocaleString('en-US', {minimumFractionDigits: 2});
-            } else { row2.classList.add('hidden'); }
-
-            const row3 = document.getElementById('dyn-row-3');
-            const r3Val = document.getElementById('dyn-row-3-val');
-            const r3Bal = document.getElementById('dyn-row-3-bal');
-            if (v1 > 0) {
-                row3.classList.remove('hidden');
-                r3Val.innerText = `-${v1.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-                r3Bal.innerText = finalBalance.toLocaleString('en-US', {minimumFractionDigits: 2});
-            } else { row3.classList.add('hidden'); }
-
             document.getElementById('brs-val-1').innerText = `BDT -${v1.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('brs-val-2').innerText = `BDT -${v2.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('brs-val-3').innerText = `BDT -${v3.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
 
             const finalBalText = document.getElementById('certified-final-bal');
             const finalFlag = document.getElementById('final-balance-flag');
-            const directiveTxt = document.getElementById('release-directive-txt');
 
             if (finalBalance < 0) {
                 finalBalText.className = "text-emerald-800 font-extrabold";
                 finalBalText.innerText = `BDT ${Math.abs(finalBalance).toLocaleString('en-US', {minimumFractionDigits: 2})} (Advance Credit)`;
                 finalFlag.className = "bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded";
                 finalFlag.innerText = "CLEARED / ADVANCE";
-                directiveTxt.innerText = `2. All temporary system credit blocks and delivery holds for Dealer ID 3000002272 have been permanently unlocked. The shipment and delivery gatepass for the 65-inch Google TV is hereby cleared for immediate release.`;
             } else {
                 finalBalText.className = "text-red-700 font-extrabold";
                 finalBalText.innerText = `BDT ${finalBalance.toLocaleString('en-US', {minimumFractionDigits: 2})} (Due)`;
                 finalFlag.className = "bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded";
                 finalFlag.innerText = "OUTSTANDING DUE";
-                directiveTxt.innerText = `2. Ledger state holds unverified liabilities. Delivery flags and automated gate-passes for the 65-inch Google TV remain locked.`;
             }
         }
 
