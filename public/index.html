@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -350,27 +349,16 @@
 
     <!-- Interactive Logic Controller -->
     <script>
-        // Global State Definition
         let currentMode = 'exam';
-        const targetAnswers = {
-            trx1: 200000,
-            trx2: 229000,
-            trx3: 100000
-        };
+        const targetAnswers = { trx1: 200000, trx2: 229000, trx3: 100000 };
 
-        // Initialize state on load
-        window.onload = function() {
-            setEngineMode('exam');
-        };
+        window.onload = function() { setEngineMode('exam'); };
 
-        // Switch Engine Mode (Admin/Cockpit vs Abu Bakar's Exam)
         function setEngineMode(mode) {
             currentMode = mode;
             const btnExam = document.getElementById('mode-exam-btn');
             const btnMaster = document.getElementById('mode-master-btn');
             const instText = document.getElementById('system-instructions');
-
-            // Reset inputs
             const inp1 = document.getElementById('inp-trx1');
             const inp2 = document.getElementById('inp-trx2');
             const inp3 = document.getElementById('inp-trx3');
@@ -379,34 +367,20 @@
                 btnMaster.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white';
                 btnExam.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white';
                 instText.innerText = "Director's Cockpit Active. System exhibits verified state (Sync Level 4). All entries have been forced-approved via core admin privileges.";
-                
-                // Force correct values
                 inp1.value = targetAnswers.trx1;
                 inp2.value = targetAnswers.trx2;
                 inp3.value = targetAnswers.trx3;
-                
-                // Disable inputs for master view
-                inp1.disabled = true;
-                inp2.disabled = true;
-                inp3.disabled = true;
+                inp1.disabled = true; inp2.disabled = true; inp3.disabled = true;
             } else {
                 btnExam.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-amber-600 text-white';
                 btnMaster.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white';
                 instText.innerText = "Abu Bakar Exam Mode Active. Enter the missing payments discovered from the DBBL statement copy to balance MD. Al Amin Sohag's account ledger.";
-                
-                inp1.value = '';
-                inp2.value = '';
-                inp3.value = '';
-                
-                inp1.disabled = false;
-                inp2.disabled = false;
-                inp3.disabled = false;
+                inp1.value = ''; inp2.value = ''; inp3.value = '';
+                inp1.disabled = false; inp2.disabled = false; inp3.disabled = false;
             }
-
             verifyReconciliation();
         }
 
-        // Real-time Valuation Engine
         function verifyReconciliation() {
             const v1 = parseFloat(document.getElementById('inp-trx1').value) || 0;
             const v2 = parseFloat(document.getElementById('inp-trx2').value) || 0;
@@ -416,7 +390,6 @@
             const verifiedCreditTotal = v1 + v2 + v3;
             const finalBalance = baseDue - verifiedCreditTotal;
 
-            // Update PDF rows in Real-Time
             updatePDFDisplay(v1, v2, v3, finalBalance);
 
             const verdictBox = document.getElementById('test-verdict-box');
@@ -428,23 +401,19 @@
             const isMatched = (v1 === targetAnswers.trx1 && v2 === targetAnswers.trx2 && v3 === targetAnswers.trx3);
 
             if (isMatched) {
-                // Success State
                 verdictBox.className = "p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-2.5 transition-all";
                 verdictTitle.className = "text-xs font-bold text-emerald-400 uppercase";
                 verdictTitle.innerText = "LEDGER STATE: RECONCILED (TRUE ADVANCE)";
                 verdictDesc.innerText = "Reconciliation audit complete. Outstanding bill has been completely dropped to BDT 0.00. Genuine credit verified. Printing authorized.";
-                
                 printBtn.disabled = false;
                 printBtn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs py-3 rounded-xl transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 cursor-pointer";
                 printBtn.innerText = "Print Official Certificate (UNLOCKED)";
                 stamp.style.opacity = "1";
             } else {
-                // Outstanding State
                 verdictBox.className = "p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2.5 transition-all";
                 verdictTitle.className = "text-xs font-bold text-amber-400 uppercase";
                 verdictTitle.innerText = "LEDGER STATE: OUTSTANDING DUE";
                 verdictDesc.innerText = `Reconciling process active. Total validated offset credit: BDT ${verifiedCreditTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}. Missing balance remains locked.`;
-                
                 printBtn.disabled = true;
                 printBtn.className = "w-full bg-slate-800 text-slate-500 font-extrabold text-xs py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-not-allowed";
                 printBtn.innerText = "Print Official Certificate (Locked)";
@@ -452,9 +421,7 @@
             }
         }
 
-        // Live Document Updater
         function updatePDFDisplay(v1, v2, v3, finalBalance) {
-            // Uncover Row 1
             const row1 = document.getElementById('dyn-row-1');
             const r1Val = document.getElementById('dyn-row-1-val');
             const r1Bal = document.getElementById('dyn-row-1-bal');
@@ -462,11 +429,8 @@
                 row1.classList.remove('hidden');
                 r1Val.innerText = `-${v3.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
                 r1Bal.innerText = (76210 - v3).toLocaleString('en-US', {minimumFractionDigits: 2});
-            } else {
-                row1.classList.add('hidden');
-            }
+            } else { row1.classList.add('hidden'); }
 
-            // Uncover Row 2
             const row2 = document.getElementById('dyn-row-2');
             const r2Val = document.getElementById('dyn-row-2-val');
             const r2Bal = document.getElementById('dyn-row-2-bal');
@@ -474,11 +438,8 @@
                 row2.classList.remove('hidden');
                 r2Val.innerText = `-${v2.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
                 r2Bal.innerText = (76210 - v3 - v2).toLocaleString('en-US', {minimumFractionDigits: 2});
-            } else {
-                row2.classList.add('hidden');
-            }
+            } else { row2.classList.add('hidden'); }
 
-            // Uncover Row 3
             const row3 = document.getElementById('dyn-row-3');
             const r3Val = document.getElementById('dyn-row-3-val');
             const r3Bal = document.getElementById('dyn-row-3-bal');
@@ -486,11 +447,8 @@
                 row3.classList.remove('hidden');
                 r3Val.innerText = `-${v1.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
                 r3Bal.innerText = finalBalance.toLocaleString('en-US', {minimumFractionDigits: 2});
-            } else {
-                row3.classList.add('hidden');
-            }
+            } else { row3.classList.add('hidden'); }
 
-            // Update Summary Block
             document.getElementById('brs-val-1').innerText = `BDT -${v1.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('brs-val-2').innerText = `BDT -${v2.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('brs-val-3').innerText = `BDT -${v3.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
@@ -514,12 +472,7 @@
             }
         }
 
-        // Secure Window Print Handler
-        function triggerPrint() {
-            window.print();
-        }
+        function triggerPrint() { window.print(); }
     </script>
 </body>
 </html>
-
-```
