@@ -10,11 +10,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Import Dynamic Reconciliation Routes
-const reconciliationRoutes = require('./routes/reconciliationRoutes');
-
-// Dynamic POST API Route Registration
-app.use('/api/reconcile', reconciliationRoutes);
+// Import Dynamic Reconciliation Routes (Ensure routes/reconciliationRoutes.js exists)
+try {
+    const reconciliationRoutes = require('./routes/reconciliationRoutes');
+    app.use('/api/reconcile', reconciliationRoutes);
+} catch (error) {
+    console.warn("⚠️ Warning: './routes/reconciliationRoutes' not found. Skipping dynamic route registration.");
+}
 
 // ==========================================
 // ১. মিনিস্টার (Minister MyOne Group) - SAP LID ম্যাপিং সহ GET API
@@ -68,11 +70,12 @@ app.get('/api/reconcile/butterfly', (req, res) => {
     });
 });
 
-// Root Page Serving
+// Root Page Serving (Fall-through for Single Page Application)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Server Initialization
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Engine running on port ${PORT}`);
 });
