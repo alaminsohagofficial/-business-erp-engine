@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Import Dynamic Reconciliation Routes (Ensure routes/reconciliationRoutes.js exists)
+// Import Dynamic Reconciliation Routes (if exists)
 try {
     const reconciliationRoutes = require('./routes/reconciliationRoutes');
     app.use('/api/reconcile', reconciliationRoutes);
@@ -19,7 +19,7 @@ try {
 }
 
 // ==========================================
-// ১. মিনিস্টার (Minister MyOne Group) - SAP LID ম্যাপিং সহ GET API
+// ১. মিনিস্টার (Minister MyOne Group) - SAP LID Mapping GET API
 // ==========================================
 app.get('/api/reconcile/minister', (req, res) => {
     const ministerLidLedger = [
@@ -46,15 +46,15 @@ app.get('/api/reconcile/minister', (req, res) => {
 });
 
 // ==========================================
-// ২. বাটারফ্লাই (Butterfly Marketing Ltd) - Narration & Ref সহ GET API
+// ২. বাটারফ্লাই (Butterfly Marketing Ltd) - Narration & Ref GET API
 // ==========================================
 app.get('/api/reconcile/butterfly', (req, res) => {
     const butterflyLedger = [
-        { date: "06-JUL-26", traceId: "100NXN126187M630", narration: "PA-PP2026/0630", amount: 200000.00 },
-        { date: "06-JUL-26", traceId: "100NXN126187M642", narration: "Ref: 3000002272", amount: 200000.00 },
-        { date: "06-JUL-26", traceId: "100NXN126187M620", narration: "PA-PP2026/0620", amount: 300000.00 },
-        { date: "07-JUL-26", traceId: "100NXN126188M636", narration: "Core Reference", amount: 229000.00 },
-        { date: "10-JUL-26", traceId: "100NEXP26191M100", narration: "Fund Transfer", amount: 100000.00 }
+        { date: "06-JUL-26", traceId: "100NXN126187M630", narration: "PA-PP2026/0630", amount: 200000.00, status: "SETTLED" },
+        { date: "06-JUL-26", traceId: "100NXN126187M642", narration: "Ref: 3000002272", amount: 200000.00, status: "SETTLED" },
+        { date: "06-JUL-26", traceId: "100NXN126187M620", narration: "PA-PP2026/0620", amount: 300000.00, status: "SETTLED" },
+        { date: "07-JUL-26", traceId: "100NXN126188M636", narration: "Core Reference", amount: 229000.00, status: "SETTLED" },
+        { date: "10-JUL-26", traceId: "100NEXP26191M100", narration: "Fund Transfer", amount: 100000.00, status: "SETTLED" }
     ];
 
     const totalButterfly = butterflyLedger.reduce((sum, item) => sum + item.amount, 0);
@@ -66,11 +66,12 @@ app.get('/api/reconcile/butterfly', (req, res) => {
         totalDepositedAdvance: totalButterfly, // BDT 1,029,000.00
         currentBlockedOrder: 650000.00,
         varianceAdjustment: 76210.00,
+        status: "SETTLED",
         transactions: butterflyLedger
     });
 });
 
-// Root Page Serving (Fall-through for Single Page Application)
+// Root Page Serving (SPA Fallback)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
