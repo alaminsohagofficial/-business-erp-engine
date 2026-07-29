@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-// ==========================================
-// DBBL Chargeback & Suspense Audit API
-// ==========================================
+// DBBL Audit API
 router.get('/dbbl-audit', (req, res) => {
     res.json({
         success: true,
@@ -18,20 +16,14 @@ router.get('/dbbl-audit', (req, res) => {
             uncreditedSuspenseAmount: 1000000.00,
             traceId: "100NEXP26187M597",
             status: "CHARGEBACK_REQUESTED"
-        },
-        actionRequired: "Interbank Credit Reversal to Account 7017511802593"
+        }
     });
 });
 
-// ==========================================
-// Consolidated Health Check API
-// ==========================================
+// Health API
 router.get('/health', (req, res) => {
-    res.json({
-        status: "UP",
-        service: "VatOne ERP & DBBL Reconciliation Engine",
-        timestamp: new Date().toISOString()
-    });
+    res.json({ status: "UP", timestamp: new Date().toISOString() });
 });
 
+// VERY IMPORTANT: MUST EXPORT
 module.exports = router;
