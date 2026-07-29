@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Import Dynamic Reconciliation Routes (if exists)
+// Import Dynamic Reconciliation Routes
 try {
     const reconciliationRoutes = require('./routes/reconciliationRoutes');
     app.use('/api/reconcile', reconciliationRoutes);
@@ -19,7 +19,7 @@ try {
 }
 
 // ==========================================
-// ১. মিনিস্টার (Minister MyOne Group) - SAP LID Mapping GET API
+// ১. মিনিস্টার (Minister MyOne Group) GET API
 // ==========================================
 app.get('/api/reconcile/minister', (req, res) => {
     const ministerLidLedger = [
@@ -39,14 +39,14 @@ app.get('/api/reconcile/minister', (req, res) => {
         dealerCode: "DEAL002905",
         dealerName: "SR Electronics Park / Salsabilah Amin Limited",
         verificationRef: "DBBL/HO/SYS-AUDIT/2026/10924",
-        totalReconciledAmount: totalMinister, // BDT 1,920,000.00
+        totalReconciledAmount: totalMinister,
         status: "100% OK / SETTLED",
         transactions: ministerLidLedger
     });
 });
 
 // ==========================================
-// ২. বাটারফ্লাই (Butterfly Marketing Ltd) - Narration & Ref GET API
+// ২. বাটারফ্লাই (Butterfly Marketing Ltd) GET API
 // ==========================================
 app.get('/api/reconcile/butterfly', (req, res) => {
     const butterflyLedger = [
@@ -63,7 +63,7 @@ app.get('/api/reconcile/butterfly', (req, res) => {
         success: true,
         company: "Butterfly Marketing Limited",
         dealerCode: "3000002272",
-        totalDepositedAdvance: totalButterfly, // BDT 1,029,000.00
+        totalDepositedAdvance: totalButterfly,
         currentBlockedOrder: 650000.00,
         varianceAdjustment: 76210.00,
         status: "SETTLED",
@@ -71,7 +71,7 @@ app.get('/api/reconcile/butterfly', (req, res) => {
     });
 });
 
-// Root Page Serving (SPA Fallback)
+// Root Page Serving
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
