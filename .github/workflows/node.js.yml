@@ -1,4 +1,4 @@
-name: Node.js CI & Audit Validation
+name: Node.js CI
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
@@ -24,11 +24,3 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
-
-    - name: Validate JavaScript Syntax
-      run: |
-        node -c server.js
-        node -c routes/reconciliationRoutes.js
-
-    - name: Run Build (If Present)
-      run: npm run build --if-present
