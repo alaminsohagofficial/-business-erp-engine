@@ -1,11 +1,11 @@
+version: "1"
 services:
   - type: web
     name: business-erp-engine
-    env: node
+    runtime: node
+    repo: https://github.com/alaminsohagofficial/-business-erp-engine
     plan: free
     region: singapore
     buildCommand: npm install
     startCommand: node server.js
-    envVars:
-      - key: GEMINI_API_KEY
-        sync: false
+    autoDeployTrigger: commit
