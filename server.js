@@ -2,13 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
-const Transaction = require('./models/Transaction'); // ডাটাবেজ মডেল কল করা হলো
+const Transaction = require('./models/Transaction');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
 app.use(cors());
 app.use(express.json());
+// ড্যাশবোর্ড ফ্রন্টএন্ড কানেক্ট করার জন্য নিচের লাইনটি যোগ করা হয়েছে:
+app.use(express.static('public'));
 
 // ডাটাবেজ কানেকশন এবং অটোমেটিক সিডিং
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/erp_engine';
@@ -16,7 +18,6 @@ mongoose.connect(MONGO_URI)
   .then(async () => {
     console.log('MongoDB Connected Successfully');
     
-    // অটো-সিডিং লজিক: ডাটাবেজ খালি থাকলে নিজে নিজেই সব ডাটা বসিয়ে নেবে
     const count = await Transaction.countDocuments();
     if (count === 0) {
       console.log('Database empty! Auto-seeding initial data...');
@@ -34,14 +35,6 @@ mongoose.connect(MONGO_URI)
     }
   })
   .catch(err => console.log('MongoDB Connection Notice:', err.message));
-
-app.get('/', (req, res) => {
-  res.json({
-    status: 'ONLINE',
-    engine: 'Salsabilah Electronics & Business ERP Engine',
-    message: 'Auto-Seeding is Active. All Database Ready!'
-  });
-});
 
 const erpRoutes = require('./routes/erp');
 app.use('/api/erp', erpRoutes);
