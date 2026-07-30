@@ -1,9 +1,18 @@
+require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const { OAuth2Client } = require('google-auth-library');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Initialize Google OAuth2 Client
+const oauth2Client = new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_CALLBACK_URL || `http://localhost:${PORT}/auth/google/callback`
+);
 
 // Middleware Setup
 app.use(cors());
@@ -17,6 +26,49 @@ try {
 } catch (error) {
     console.warn("⚠️ Warning: './routes/reconciliationRoutes' not found. Skipping dynamic route registration.");
 }
+
+// ==========================================
+// 🔐 GOOGLE OAUTH 2.0 AUTHENTICATION ROUTES
+// ==========================================
+
+// 1. Redirect User to Google Sign-In Page
+app.get('/auth/google', (req, res) => {
+    const authUrl = oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: [
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email'
+        ]
+    });
+    res.redirect(authUrl);
+});
+
+// 2. Handle Google OAuth Callback
+app.get('/auth/google/callback', async (req, res) => {
+    const { code } = req.query;
+
+    if (!code) {
+        return res.status(400).json({ success: false, message: 'Authorization code missing.' });
+    }
+
+    try {
+        // Exchange authorization code for access token
+        const { tokens } = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(tokens);
+
+        // Retrieve user profile information
+        const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+            headers: { Authorization: `Bearer ${tokens.access_token}` }
+        });
+        const userProfile = await userResponse.json();
+
+        // Pass authenticated user context back to frontend dashboard
+        res.redirect(`/?login=success&email=${encodeURIComponent(userProfile.email)}&name=${encodeURIComponent(userProfile.name)}`);
+    } catch (error) {
+        console.error('❌ Google OAuth Authentication Error:', error);
+        res.status(500).json({ success: false, message: 'Google Authentication Failed', error: error.message });
+    }
+});
 
 // ==========================================
 // ১. মিনিস্টার (Minister MyOne Group) GET API
