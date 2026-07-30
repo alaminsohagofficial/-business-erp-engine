@@ -1,37 +1,49 @@
 /**
- * Reconciliation Controller
+ * Reconciliation Controller (Optimized Version)
  * Handles DBBL/Bank Statement Ingestion, ERP Ledger Matching,
  * Variance Detection, and True Advance Balance Calculation.
  */
 
-// ব্যাংক স্টেটমেন্ট ও ইআরপি লেজার রিকনসিল করার মেইন ফাংশন
 exports.reconcileLedger = async (req, res) => {
   try {
     const { dealerId, bankTransactions, erpPostedEntries } = req.body;
 
-    if (!dealerId || !bankTransactions || !erpPostedEntries) {
+    if (!dealerId || !Array.isArray(bankTransactions) || !Array.isArray(erpPostedEntries)) {
       return res.status(400).json({
         success: false,
-        message: "Dealer ID, Bank Transactions, and ERP Entries are required."
+        message: "Dealer ID, Bank Transactions array, and ERP Entries array are required."
       });
     }
 
-    let totalBankSettledAmount = 0;
+    // ১. পারফরম্যান্স অপটিমাইজেশনের জন্য ERP Entries-এর Fast Lookup Map ও Set তৈরি
+    const erpLookup = new Map();
+    const matchedErpKeys = new Set();
     let totalErpPostedAmount = 0;
+
+    erpPostedEntries.forEach((erp, index) => {
+      const amount = Math.round(Number(erp.amount || 0) * 100); // সেন্ট/পয়সায় কনভার্ট
+      totalErpPostedAmount += amount;
+
+      const erpRecord = { ...erp, originalIndex: index };
+      if (erp.trxId) erpLookup.set(erp.trxId, erpRecord);
+      if (erp.lid) erpLookup.set(erp.lid, erpRecord);
+    });
+
+    let totalBankSettledAmount = 0;
     let unpostedCredits = [];
     let verifiedTransactions = [];
 
-    // ১. ব্যাংকের সফল ট্রানজেকশনগুলো ফিল্টার ও প্রসেস করা
+    // ২. ব্যাংক ট্রানজেকশন প্রসেস (O(N) Complexity)
     bankTransactions.forEach((bankTrx) => {
       if (bankTrx.status === "SUCCESS" || bankTrx.status === "SETTLED") {
-        totalBankSettledAmount += Number(bankTrx.amount);
+        const bankAmount = Math.round(Number(bankTrx.amount || 0) * 100);
+        totalBankSettledAmount += bankAmount;
 
-        // ইআরপি রিকার্ডের সাথে ট্রানজেকশন আইডি বা SAP LID মেলানো
-        const matchedErpEntry = erpPostedEntries.find(
-          (erp) => erp.trxId === bankTrx.trxId || erp.lid === bankTrx.lid
-        );
+        // O(1) Time-এ ERP Record ম্যাচ করা
+        const matchedErpEntry = erpLookup.get(bankTrx.trxId) || erpLookup.get(bankTrx.lid);
 
         if (matchedErpEntry) {
+          matchedErpKeys.add(matchedErpEntry.originalIndex);
           verifiedTransactions.push({
             trxId: bankTrx.trxId,
             lid: bankTrx.lid,
@@ -39,7 +51,7 @@ exports.reconcileLedger = async (req, res) => {
             status: "VERIFIED_AND_POSTED"
           });
         } else {
-          // ব্যাংকে টাকা ক্লিয়ার কিন্তু ইআরপিতে পোস্ট হয়নি (Unposted Credit)
+          // ব্যাংকে ক্লিয়ার কিন্তু ERP-তে পোস্ট হয়নি
           unpostedCredits.push({
             trxId: bankTrx.trxId,
             lid: bankTrx.lid,
@@ -51,31 +63,33 @@ exports.reconcileLedger = async (req, res) => {
       }
     });
 
-    // ২. ইআরপিতে ইতিমধ্যে পোস্ট হওয়া মোট অ্যামাউন্ট হিসাব
-    erpPostedEntries.forEach((erp) => {
-      totalErpPostedAmount += Number(erp.amount);
-    });
+    // ৩. যেসব ERP এন্ট্রি ব্যাংকে পাওয়া যায়নি (Unmatched ERP Entries)
+    const unmatchedErpEntries = erpPostedEntries.filter(
+      (_, index) => !matchedErpKeys.has(index)
+    );
 
-    // ৩. ভ্যারিয়েন্স এবং ট্রু অ্যাডভান্স (True Advance Balance) হিসাব
+    // ৪. ফাইনাল অ্যামাউন্টগুলো আসল কারেন্সিতে (Taka/Dollar) রূপান্তর
     const unpostedTotalAmount = unpostedCredits.reduce(
-      (sum, item) => sum + Number(item.amount),
+      (sum, item) => sum + Math.round(Number(item.amount || 0) * 100),
       0
     );
-    const variance = totalBankSettledAmount - totalErpPostedAmount;
 
-    // যদি ব্যাংক থেকে ক্লিয়ার হওয়া মোট টাকা ইআরপির চেয়ে বেশি হয়, তবে ডিলারের অ্যাডভান্স জমা আছে
-    const trueAdvanceBalance = unpostedTotalAmount;
+    const bankSettledFinal = totalBankSettledAmount / 100;
+    const erpPostedFinal = totalErpPostedAmount / 100;
+    const unpostedTotalFinal = unpostedTotalAmount / 100;
+    const varianceFinal = (totalBankSettledAmount - totalErpPostedAmount) / 100;
+
     const isHoldEligibleForRelease = unpostedCredits.length > 0;
 
     return res.status(200).json({
       success: true,
       dealerId,
       summary: {
-        totalBankSettledAmount,
-        totalErpPostedAmount,
-        unpostedTotalAmount,
-        variance,
-        trueAdvanceBalance: -Math.abs(trueAdvanceBalance), // Represented as negative credit position
+        totalBankSettledAmount: bankSettledFinal,
+        totalErpPostedAmount: erpPostedFinal,
+        unpostedTotalAmount: unpostedTotalFinal,
+        variance: varianceFinal,
+        trueAdvanceBalance: -Math.abs(unpostedTotalFinal), // Credit position
         statusDirective: isHoldEligibleForRelease
           ? "RELEASE_CREDIT_HOLD_IMMEDIATELY"
           : "LEDGER_FULLY_ALIGNED"
@@ -83,10 +97,13 @@ exports.reconcileLedger = async (req, res) => {
       auditDetails: {
         verifiedCount: verifiedTransactions.length,
         unpostedCount: unpostedCredits.length,
+        unmatchedErpCount: unmatchedErpEntries.length,
         unpostedCredits,
-        verifiedTransactions
+        verifiedTransactions,
+        unmatchedErpEntries
       }
     });
+
   } catch (error) {
     console.error("Reconciliation Engine Error:", error);
     return res.status(500).json({
