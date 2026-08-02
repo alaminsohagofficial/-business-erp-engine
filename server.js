@@ -20,9 +20,9 @@ app.use(express.urlencoded({ extended: true }));
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/business_erp_engine';
 mongoose.connect(MONGO_URI)
   .then(() => console.log('🟢 MongoDB Connected: ERP Engine Ledger Database'))
-  .catch((err) => console.error('🔴 MongoDB Connection Error:', err));
+  .catch((err) => console.error('🔴 MongoDB Connection Error:', err.message));
 
-// Route Import Engine
+// Route Imports
 const reconciliationRoutes = require('./services/reconciliation/routes');
 const stockRoutes = require('./services/inventory/routes');
 
@@ -40,7 +40,18 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Start Server Engine
-app.listen(PORT, () => {
+// 404 Route Handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Endpoint Not Found' });
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('🔥 Server Error:', err.stack);
+  res.status(500).json({ error: 'Internal Server Error', message: err.message });
+});
+
+// Start Server Engine with Host Binding for Cloud (Render/Docker)
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 ERP Engine Running on Port ${PORT}`);
 });
