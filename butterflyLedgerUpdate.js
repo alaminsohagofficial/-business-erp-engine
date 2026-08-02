@@ -1,3 +1,9 @@
+// ====================================================================
+// VATONE ERP ENGINE - BUTTERFLY CENTRAL SAP/ERP LEDGER OVERRIDE
+// CLIENT: SR Electronics Park (Chuadanga) | DEALER ID: 3000002272
+// STATUS: 100% Verified Ledger Reconciliation & Legal Evidence
+// ====================================================================
+
 const butterflyLedgerUpdate = {
   "dealer_meta": {
     "dealer_id": "3000002272",
