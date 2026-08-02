@@ -1,11 +1,9 @@
-version: "1"
 services:
   - type: web
     name: business-erp-engine
-    runtime: node
-    repo: https://github.com/alaminsohagofficial/-business-erp-engine
-    plan: free
-    region: singapore
+    env: node
     buildCommand: npm install
-    startCommand: node server.js
-    autoDeployTrigger: commit
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.x
