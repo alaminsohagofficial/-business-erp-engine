@@ -2,7 +2,6 @@ const { GoogleGenAI } = require('@google/genai');
 
 class GeminiAiService {
     constructor() {
-        // Initialize Gemini client using official guidelines
         this.ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     }
 
