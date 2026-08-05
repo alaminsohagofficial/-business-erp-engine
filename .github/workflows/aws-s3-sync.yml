@@ -19,4 +19,9 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm install
+        # npm install এর পরিবর্তে npm ci ব্যবহার করা বেশি নিরাপদ
+        run: npm ci 
+        
+      # যদি আপনার প্রজেক্টটি বিল্ড করার প্রয়োজন হয়, তবে নিচের ধাপটি যুক্ত করতে পারেন
+      # - name: Build Project
+      #   run: npm run build
