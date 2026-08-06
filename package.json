@@ -1,9 +1,5 @@
-{
-  "name": "business-erp-engine",
-  "version": "1.0.0",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "build": "npm install"
-  }
+"scripts": {
+  "build": "tsc",
+  "start": "node dist/server.js",
+  "dev": "ts-node-dev --respawn src/server.ts"
 }
