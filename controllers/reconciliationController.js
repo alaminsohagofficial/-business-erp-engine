@@ -1,5 +1,3 @@
-
-};
 /**
  * Reconciliation Controller (Production / Bulletproof Version)
  * Integrates:
