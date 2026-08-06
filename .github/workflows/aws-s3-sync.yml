@@ -4,9 +4,12 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,11 +20,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm' # Caches npm dependencies to speed up future runs
 
       - name: Install Dependencies
-        # npm install এর পরিবর্তে npm ci ব্যবহার করা বেশি নিরাপদ
-        run: npm ci 
-        
-      # যদি আপনার প্রজেক্টটি বিল্ড করার প্রয়োজন হয়, তবে নিচের ধাপটি যুক্ত করতে পারেন
-      # - name: Build Project
-      #   run: npm run build
+        run: npm ci
+
+      # Checks JavaScript syntax / bugs before deploying to Render
+      - name: Verify Code Syntax
+        run: node --check server.js
+
+      # Validates Dockerfile build integrity locally in CI
+      - name: Test Docker Build
+        run: docker build -t erp-engine:test .
