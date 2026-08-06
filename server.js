@@ -31,15 +31,15 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log('🟢 MongoDB Connected: ERP Engine Ledger Database'))
   .catch((err) => console.error('🔴 MongoDB Connection Error:', err.message));
 
-// Route Imports (Corrected paths matching root structures)
-const reconciliationRoutes = require('./routes/reconciliationRoutes');
-const stockRoutes = require('./routes/stockRoutes');
+// Route Imports (Matched directly to your repository folder structure)
+const routes = require('./routes');
+const reconciliationService = require('./services/reconciliation');
 
 // Mount Routes to API Endpoints
-app.use('/api/v1/reconciliation', reconciliationRoutes);
-app.use('/api/v1/inventory', stockRoutes);
+app.use('/api/v1', routes);
+app.use('/api/v1/reconciliation', reconciliationService);
 
-// Root Route: Serves dashboard index.html on Render
+// Root Route: Serves dashboard index.html directly on Render
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
