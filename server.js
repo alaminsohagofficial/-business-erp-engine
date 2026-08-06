@@ -4,6 +4,7 @@
  */
 
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -13,10 +14,15 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Security & Middleware Setup
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false // Allows inline scripts for dashboard rendering
+}));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static dashboard files from the public folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Mongo Database Connection
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/business_erp_engine';
@@ -25,13 +31,18 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log('🟢 MongoDB Connected: ERP Engine Ledger Database'))
   .catch((err) => console.error('🔴 MongoDB Connection Error:', err.message));
 
-// Route Imports
-const reconciliationRoutes = require('./services/reconciliation/routes');
-const stockRoutes = require('./services/inventory/routes');
+// Route Imports (Corrected paths matching root structures)
+const reconciliationRoutes = require('./routes/reconciliationRoutes');
+const stockRoutes = require('./routes/stockRoutes');
 
 // Mount Routes to API Endpoints
 app.use('/api/v1/reconciliation', reconciliationRoutes);
 app.use('/api/v1/inventory', stockRoutes);
+
+// Root Route: Serves dashboard index.html on Render
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Health Check / SAIOS Gateway Verification
 app.get('/health', (req, res) => {
