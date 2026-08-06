@@ -30,18 +30,31 @@
 
   <!-- SECTION 1: MINISTER MYONE GROUP -->
   <div class="section-title">PART A: Minister Hi-Tech Park & MyOne Group (Dealer: DEAL002905)</div>
-  <p style="font-size: 8.5pt; color: #475569; margin-bottom: 8px;"><strong>Verification Ref:</strong> DBBL/HO/SYS-AUDIT/2026/10924 | <strong>Total:</strong> ৳1,920,000.00 (100% SETTLED)</p>
+  <p style="font-size: 8.5pt; color: #475569; margin-bottom: 8px;">
+    <strong>Verification Ref:</strong> DBBL/HO/SYS-AUDIT/2026/10925-AMEND & IBBLFT260701801 | 
+    <strong>SAP Doc No:</strong> 5100029481 | 
+    <strong>Total Cleared:</strong> ৳15,189,545.00 (100% SETTLED)
+  </p>
   <table>
     <thead>
       <tr>
         <th>Date</th>
-        <th>Transaction ID (Trace)</th>
-        <th>SAP Ledger Reference (LID)</th>
+        <th>Transaction ID / Channel</th>
+        <th>SAP Ledger Reference (LID / Doc)</th>
         <th class="text-right">Amount (BDT)</th>
         <th class="text-center">Status</th>
       </tr>
     </thead>
     <tbody>
+      <!-- Islami Bank RTGS Major Settlement -->
+      <tr style="background-color: #f0fdf4;">
+        <td>02-Aug-2026</td>
+        <td><strong>IBBLFT260701801</strong> (RTGS)</td>
+        <td><span class="highlight-lid">SAP Doc #5100029481</span></td>
+        <td class="text-right"><strong>13,269,545.00</strong></td>
+        <td class="text-center status-ok">PAID & POSTED</td>
+      </tr>
+      <!-- DBBL Clearing Volume Breakdown -->
       <tr><td>06-Jul-2026</td><td>100NEXP26187M597</td><td><span class="highlight-lid">LID01976788453</span></td><td class="text-right">238,000.00</td><td class="text-center status-ok">SETTLED</td></tr>
       <tr><td>07-Jul-2026</td><td>100NEXP26188M616</td><td><span class="highlight-lid">LID01996890123</span></td><td class="text-right">270,000.00</td><td class="text-center status-ok">SETTLED</td></tr>
       <tr><td>07-Jul-2026</td><td>100NEXP26188M584</td><td><span class="highlight-lid">LID01996889539</span></td><td class="text-right">230,000.00</td><td class="text-center status-ok">SETTLED</td></tr>
@@ -52,9 +65,9 @@
     </tbody>
     <tfoot>
       <tr style="font-weight:bold; background:#e2e8f0;">
-        <td colspan="3">Total Reconciled Ledger Ingestion</td>
-        <td class="text-right">1,920,000.00</td>
-        <td class="text-center status-ok">100% OK</td>
+        <td colspan="3">Total Reconciled Ledger Ingestion (IBBL + DBBL)</td>
+        <td class="text-right">15,189,545.00</td>
+        <td class="text-center status-ok">100% OK (450 Units Released)</td>
       </tr>
     </tfoot>
   </table>
