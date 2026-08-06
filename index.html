@@ -1,104 +1,110 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Official Interbank Concordance & B2B Ledger</title>
-<style>
-  body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f1f5f9; color: #0f172a; margin: 0; padding: 20px; }
-  .container { max-width: 900px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-  .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px; }
-  h1 { margin: 0; color: #0f172a; font-size: 18pt; text-transform: uppercase; }
-  .sub-title { color: #475569; font-size: 10pt; margin-top: 5px; }
-  .section-title { font-size: 12pt; font-weight: bold; color: #1e293b; background: #e2e8f0; padding: 8px 12px; border-left: 4px solid #0f172a; margin-top: 25px; margin-bottom: 10px; }
-  table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 9pt; }
-  th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
-  th { background-color: #0f172a; color: #ffffff; font-weight: 600; }
-  tr:nth-child(even) { background-color: #f8fafc; }
-  .text-right { text-align: right; }
-  .text-center { text-align: center; }
-  .status-ok { color: #166534; font-weight: bold; }
-  .highlight-lid { background-color: #fef08a; font-weight: bold; padding: 2px 4px; border-radius: 3px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salsabilah Electronics ERP Engine Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7fa; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2c3e50; padding-bottom: 15px; margin-bottom: 25px; }
+        .header h1 { color: #2c3e50; margin: 0; font-size: 24px; }
+        .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: #ecf0f1; padding: 20px; border-radius: 8px; border-left: 5px solid #3498db; }
+        .card.minister { border-left-color: #2ecc71; background: #f4fbf7; }
+        .card h3 { margin-top: 0; color: #2c3e50; font-size: 16px; }
+        .amount { font-size: 28px; font-weight: bold; color: #2c3e50; margin: 10px 0; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #2c3e50; color: #fff; font-weight: 500; }
+        tr:hover { background-color: #f5f5f5; }
+        
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-success { background: #d4edda; color: #155724; }
+        .status-posted { background: #cce5ff; color: #004085; }
+
+        .btn { padding: 10px 20px; background-color: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 15px; transition: 0.3s; }
+        .btn:hover { background-color: #27ae60; }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Salsabilah Electronics ERP Engine</h1>
+                <p style="margin: 5px 0 0 0; color: #7f8c8d;">Corporate Accounts & Reconciliation Dashboard (GitHub Pages)</p>
+            </div>
+            <div>
+                <span style="font-weight: bold; color: #2c3e50;">Date:</span> <span id="currentDate">07 Aug 2026</span>
+            </div>
+        </div>
 
-<div class="container">
-  <div class="header">
-    <h1>DBBL & B2B Central Settlement Concordance</h1>
-    <div class="sub-title">Salsabilah Amin Limited — ERP Ledger Reconciliation Gateway</div>
-  </div>
+        <div class="dashboard-cards">
+            <div class="card minister">
+                <h3>✅ Minister-Myone Cleared & Released</h3>
+                <div class="amount">৳ ১,৫১,৮৯,৫৪৫.০০</div>
+                <p style="font-size: 13px; color: #27ae60; margin:0; font-weight: bold;">SAP Doc #5100029481 (450 Units Unlocked)</p>
+                <button class="btn" onclick="alert('Minister-Myone Ledger Fully Reconciled & Cleared!')">View SAP Clearance</button>
+            </div>
 
-  <!-- SECTION 1: MINISTER MYONE GROUP -->
-  <div class="section-title">PART A: Minister Hi-Tech Park & MyOne Group (Dealer: DEAL002905)</div>
-  <p style="font-size: 8.5pt; color: #475569; margin-bottom: 8px;">
-    <strong>Verification Ref:</strong> DBBL/HO/SYS-AUDIT/2026/10925-AMEND & IBBLFT260701801 | 
-    <strong>SAP Doc No:</strong> 5100029481 | 
-    <strong>Total Cleared:</strong> ৳15,189,545.00 (100% SETTLED)
-  </p>
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Transaction ID / Channel</th>
-        <th>SAP Ledger Reference (LID / Doc)</th>
-        <th class="text-right">Amount (BDT)</th>
-        <th class="text-center">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Islami Bank RTGS Major Settlement -->
-      <tr style="background-color: #f0fdf4;">
-        <td>02-Aug-2026</td>
-        <td><strong>IBBLFT260701801</strong> (RTGS)</td>
-        <td><span class="highlight-lid">SAP Doc #5100029481</span></td>
-        <td class="text-right"><strong>13,269,545.00</strong></td>
-        <td class="text-center status-ok">PAID & POSTED</td>
-      </tr>
-      <!-- DBBL Clearing Volume Breakdown -->
-      <tr><td>06-Jul-2026</td><td>100NEXP26187M597</td><td><span class="highlight-lid">LID01976788453</span></td><td class="text-right">238,000.00</td><td class="text-center status-ok">SETTLED</td></tr>
-      <tr><td>07-Jul-2026</td><td>100NEXP26188M616</td><td><span class="highlight-lid">LID01996890123</span></td><td class="text-right">270,000.00</td><td class="text-center status-ok">SETTLED</td></tr>
-      <tr><td>07-Jul-2026</td><td>100NEXP26188M584</td><td><span class="highlight-lid">LID01996889539</span></td><td class="text-right">230,000.00</td><td class="text-center status-ok">SETTLED</td></tr>
-      <tr><td>08-Jul-2026</td><td>100NXN126189M586</td><td><span class="highlight-lid">LID01998640246</span></td><td class="text-right">297,000.00</td><td class="text-center status-ok">SETTLED</td></tr>
-      <tr><td>08-Jul-2026</td><td>100NXN126189M591</td><td><span class="highlight-lid">LID01938788435</span></td><td class="text-right">285,000.00</td><td class="text-center status-ok">SETTLED</td></tr>
-      <tr><td>12-Jul-2026</td><td>100NEXP26193M601</td><td><span class="highlight-lid">LID01996914258</span></td><td class="text-right">300,000.00</td><td class="text-center status-ok">SETTLED</td></tr>
-      <tr><td>12-Jul-2026</td><td>100NEXP26193M602</td><td><span class="highlight-lid">LID01996987412</span></td><td class="text-right">300,000.00</td><td class="text-center status-ok">SETTLED</td></tr>
-    </tbody>
-    <tfoot>
-      <tr style="font-weight:bold; background:#e2e8f0;">
-        <td colspan="3">Total Reconciled Ledger Ingestion (IBBL + DBBL)</td>
-        <td class="text-right">15,189,545.00</td>
-        <td class="text-center status-ok">100% OK (450 Units Released)</td>
-      </tr>
-    </tfoot>
-  </table>
+            <div class="card minister">
+                <h3>✅ Butterfly Marketing Cleared</h3>
+                <div class="amount">৳ ১,৯৫,৮৩,৫৭৫.০০</div>
+                <p style="font-size: 13px; color: #7f8c8d; margin:0;">RTGS & NexusPay Verified</p>
+                <button class="btn" onclick="alert('Butterfly Ledger Report Generation Triggered!')">Generate Butterfly Report</button>
+            </div>
+        </div>
 
-  <!-- SECTION 2: BUTTERFLY MARKETING LTD -->
-  <div class="section-title">PART B: Butterfly Marketing Limited (Dealer Code: 3000002272)</div>
-  <p style="font-size: 8.5pt; color: #475569; margin-bottom: 8px;"><strong>Total Deposited Advance:</strong> BDT 1,029,000.00 | <strong>Blocked Order:</strong> BDT 650,000.00</p>
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Transaction ID</th>
-        <th>Narration / Reference</th>
-        <th class="text-right">Amount (BDT)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>06-JUL-26</td><td>100NXN126187M630</td><td><strong>PA-PP2026/0630</strong></td><td class="text-right">200,000.00</td></tr>
-      <tr><td>06-JUL-26</td><td>100NXN126187M642</td><td><strong>Ref: 3000002272</strong></td><td class="text-right">200,000.00</td></tr>
-      <tr><td>06-JUL-26</td><td>100NXN126187M620</td><td><strong>PA-PP2026/0620</strong></td><td class="text-right">300,000.00</td></tr>
-      <tr><td>07-JUL-26</td><td>100NXN126188M636</td><td>Core Reference</td><td class="text-right">229,000.00</td></tr>
-      <tr><td>10-JUL-26</td><td>100NEXP26191M100</td><td>Fund Transfer</td><td class="text-right">100,000.00</td></tr>
-    </tbody>
-    <tfoot>
-      <tr style="font-weight:bold; background:#e2e8f0;">
-        <td colspan="3">Total Advance Deposited</td>
-        <td class="text-right">1,029,000.00</td>
-      </tr>
-    </tfoot>
-  </table>
-</div>
-
+        <h3>Recent Corporate Transactions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Partner</th>
+                    <th>Bank & Trx ID</th>
+                    <th>Narration</th>
+                    <th>Amount (BDT)</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #f0fdf4;">
+                    <td>02-Aug-2026</td>
+                    <td><strong>MINISTER_MYONE</strong></td>
+                    <td>Islami Bank <br><small>IBBLFT260701801</small></td>
+                    <td>PAYMENT FOR GOODS (450 UNITS - SAP 5100029481)</td>
+                    <td>৳ 1,32,69,545</td>
+                    <td><span class="status-badge status-posted">PAID_AND_POSTED</span></td>
+                </tr>
+                <tr>
+                    <td>26-Jul-2026</td>
+                    <td><strong>BUTTERFLY_MARKETING</strong></td>
+                    <td>DBBL NexusPay <br><small>LID02207261502</small></td>
+                    <td>NexusPay- Butterfly Vendor Pay</td>
+                    <td>৳ 1,50,000</td>
+                    <td><span class="status-badge status-success">SUCCESS</span></td>
+                </tr>
+                <tr>
+                    <td>16-May-2026</td>
+                    <td><strong>BUTTERFLY_MARKETING</strong></td>
+                    <td>City Bank RTGS <br><small>Multiple UTRs (Aggregate)</small></td>
+                    <td>RTGS Fund Transfers Received</td>
+                    <td>৳ 1,94,33,575</td>
+                    <td><span class="status-badge status-posted">PAID_AND_POSTED</span></td>
+                </tr>
+                <tr>
+                    <td>29-Jul-2026</td>
+                    <td><strong>SONALI_BANK_CSS</strong></td>
+                    <td>Sonali Bank PLC <br><small>SBP/HTB/FT/2026/07-31070</small></td>
+                    <td>Continuous Credit to CSS NGO</td>
+                    <td>৳ 3,00,000</td>
+                    <td><span class="status-badge status-success">SUCCESS</span></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <p style="text-align: center; margin-top: 30px; font-size: 12px; color: #aaa;">Salsabilah Amin Limited - Corporate Management Desk</p>
+    </div>
 </body>
 </html>
