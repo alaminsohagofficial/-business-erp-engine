@@ -1,3 +1,5 @@
+
+};
 /**
  * Reconciliation Controller (Production / Bulletproof Version)
  * Integrates:
@@ -7,12 +9,14 @@
  *  - Atomic Paisa Conversion & Duplicate Detection
  */
 
-const StockItem = require('../../models/StockItem');
+// If StockItem is needed later, uncomment it
+// const StockItem = require('../models/StockItem');
 
 exports.reconcileLedger = async (req, res) => {
   try {
     const { dealerId, bankTransactions, erpPostedEntries } = req.body;
 
+    // Strict input validation
     if (!dealerId || !Array.isArray(bankTransactions) || !Array.isArray(erpPostedEntries)) {
       return res.status(400).json({
         success: false,
@@ -23,9 +27,8 @@ exports.reconcileLedger = async (req, res) => {
     // ---------------------------------------------------------------
     // 1. KNOWN BANK AUDIT RECTIFICATIONS & SAP OVERRIDES
     // ---------------------------------------------------------------
-    // Known audit rectifications from DBBL and IBBL clearance advisories
     const AUDIT_RECTIFICATIONS = {
-      "100NEXP26187M597": 238000.00, // Corrected from erroneous BDT 1,238,000.00 (DBBL Audit 10925-AMEND)
+      "100NEXP26187M597": 238000.00, // Corrected from BDT 1,238,000.00 (DBBL Audit 10925-AMEND)
     };
 
     const KNOWN_SAP_SETTLEMENTS = new Set([
@@ -42,7 +45,8 @@ exports.reconcileLedger = async (req, res) => {
     let totalErpPostedAmountPaisa = 0;
 
     erpPostedEntries.forEach((erp, index) => {
-      const amountInPaisa = Math.round(Number(erp.amount || 0) * 100);
+      const parsedAmount = parseFloat(erp.amount) || 0;
+      const amountInPaisa = Math.round(parsedAmount * 100);
       totalErpPostedAmountPaisa += amountInPaisa;
 
       const erpRecord = { ...erp, originalIndex: index, amountInPaisa };
@@ -64,12 +68,12 @@ exports.reconcileLedger = async (req, res) => {
     // 3. PROCESS BANK TRANSACTIONS (O(N) FAST PATH)
     // ---------------------------------------------------------------
     let totalBankSettledAmountPaisa = 0;
-    let unpostedCredits = [];
-    let verifiedTransactions = [];
-    let amountMismatches = [];
+    const unpostedCredits = [];
+    const verifiedTransactions = [];
+    const amountMismatches = [];
 
     bankTransactions.forEach((bankTrx) => {
-      let rawAmount = Number(bankTrx.amount || 0);
+      let rawAmount = parseFloat(bankTrx.amount) || 0;
 
       // Apply official DBBL Audit Rectification if present
       if (AUDIT_RECTIFICATIONS[bankTrx.trxId] !== undefined) {
@@ -133,7 +137,7 @@ exports.reconcileLedger = async (req, res) => {
     );
 
     const unpostedTotalPaisa = unpostedCredits.reduce(
-      (sum, item) => sum + Math.round(Number(item.amount || 0) * 100),
+      (sum, item) => sum + Math.round((parseFloat(item.amount) || 0) * 100),
       0
     );
 
