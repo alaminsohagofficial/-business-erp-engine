@@ -7,6 +7,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// =========================================================================
+// 🔒 ইমিডিয়েট সিকিউরিটি মিডলওয়্যার (SEED ENDPOINT LOCK)
+// এই কোডটি আপনার সিড রাউটকে ব্রাউজারের ডিরেক্ট ক্লিক ও লাইভ প্রোডাকশনে লক করবে।
+// =========================================================================
+app.use(['/api/erp/seed', '/api/v1/erp/seed'], (req, res, next) => {
+    // ১. লাইভ প্রোডাকশন (Render Server) হলে সাথে সাথে ব্লক করবে
+    // ২. লোকালহোস্টে থাকলেও ব্রাউজারে ডিরেক্ট ক্লিক (GET) করলে ব্লক করবে, শুধু POST রিকোয়েস্ট অ্যালাউ করবে
+    if (process.env.NODE_ENV === 'production' || req.method !== 'POST') {
+        return res.status(403).json({ 
+            success: false, 
+            message: "নিরাপত্তাজনিত কারণে এই এন্ডপয়েন্টটি লক করা হয়েছে। ব্রাউজার থেকে সরাসরি অ্যাক্সেস নিষিদ্ধ!" 
+        });
+    }
+    next();
+});
+// =========================================================================
+
 // MySQL Database Pool Configuration
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
