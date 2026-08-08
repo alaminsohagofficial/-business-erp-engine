@@ -1,143 +1,68 @@
-/**
- * Central ERP Engine Server (SAIOS Connected)
- * Supported Entities: Minister-Myone Group, Butterfly Marketing Ltd, Salsabilah Amin Ltd
- */
-
-require('dotenv').config();
-const path = require('path');
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const mongoose = require('mongoose');
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/business_erp_engine';
-
-// ==========================================
-// 1. Security & Body Parser Middleware
-// ==========================================
-app.use(helmet({
-  contentSecurityPolicy: false // Permissive CSP for dynamic ERP dashboard rendering
-}));
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json());
 
-// Serve static assets (Dashboard UI)
-app.use(express.static(path.join(__dirname, 'public')));
-
-// ==========================================
-// 2. Database Connection & Lifecycle Events
-// ==========================================
-mongoose.set('strictQuery', false);
-
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(MONGO_URI);
-    console.log(`🟢 MongoDB Connected: ${conn.connection.host} / ${conn.connection.name}`);
-  } catch (err) {
-    console.error('🔴 MongoDB Connection Initial Error:', err.message);
-  }
-};
-
-connectDB();
-
-mongoose.connection.on('disconnected', () => {
-  console.warn('⚠️ MongoDB disconnected! Attempting to reconnect...');
+// MySQL Database Pool Configuration
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'business_erp',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-mongoose.connection.on('error', (err) => {
-  console.error('🔴 MongoDB Database Error:', err.message);
-});
-
-// ==========================================
-// 3. Router Imports & Mounting
-// ==========================================
-const apiRoutes = require('./routes');
-const reconciliationRoutes = require('./services/reconciliation/routes');
-
-// Mount API Endpoints
-app.use('/api/v1', apiRoutes);
-app.use('/api/v1/reconciliations', reconciliationRoutes);
-
-// ==========================================
-// 4. Base Routes & System Health Check
-// ==========================================
-
-// Serve Dashboard SPA Index
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Gateway & Health Inspection Endpoint
-app.get('/health', (req, res) => {
-  const dbStatusMap = {
-    0: 'DISCONNECTED',
-    1: 'CONNECTED',
-    2: 'CONNECTING',
-    3: 'DISCONNECTING'
-  };
-
-  const dbState = mongoose.connection.readyState;
-  const isHealthy = dbState === 1;
-
-  res.status(isHealthy ? 200 : 503).json({
-    status: isHealthy ? 'ONLINE' : 'DEGRADED',
-    database: dbStatusMap[dbState] || 'UNKNOWN',
-    system: 'Salsabilah Business ERP Engine',
-    timestamp: new Date().toISOString(),
-    supportedEntities: [
-      'Minister-Myone Group',
-      'Butterfly Marketing Ltd',
-      'Salsabilah Amin Ltd'
-    ]
-  });
-});
-
-// ==========================================
-// 5. Error Handling & Fallbacks
-// ==========================================
-
-// 404 Route Handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: 'Endpoint Not Found',
-    path: req.originalUrl
-  });
-});
-
-// Global Error Middleware
-app.use((err, req, res, next) => {
-  console.error('🔥 Server Error Stack:', err.stack);
-  res.status(err.status || 500).json({
-    success: false,
-    error: err.name || 'Internal Server Error',
-    message: err.message || 'An unexpected server error occurred.'
-  });
-});
-
-// ==========================================
-// 6. Server Initialization & Graceful Shutdown
-// ==========================================
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 ERP Engine Running on Port ${PORT}`);
-});
-
-const gracefulShutdown = (signal) => {
-  console.log(`\n🛑 ${signal} received. Initiating graceful shutdown...`);
-  server.close(async () => {
+// ১. ডিলার ব্যাকগ্রাউন্ড ও রিয়েল-টাইম লেজার ফেস করা
+app.get('/api/v1/ledger/:dealerId', async (req, res) => {
     try {
-      await mongoose.connection.close();
-      console.log('⚡ MongoDB connection closed. ERP Engine safely terminated.');
-      process.exit(0);
+        const { dealerId } = req.params;
+        const [dealer] = await pool.execute('SELECT * FROM dealers WHERE dealer_id = ?', [dealerId]);
+        const [ledger] = await pool.execute('SELECT * FROM dealer_ledger WHERE dealer_id = ? ORDER BY posted_at DESC', [dealerId]);
+        res.json({ success: true, dealer: dealer[0], ledger });
     } catch (err) {
-      console.error(' Error during database disconnect:', err.message);
-      process.exit(1);
+        res.status(500).json({ success: false, error: err.message });
     }
-  });
-};
+});
 
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+// ২. রিয়েল-টাইম পেমেন্ট ও লেজার অটো-আপডেট
+app.post('/api/v1/payments/settle', async (req, res) => {
+    const { dealerId, amount, utrRef, bankAccount, routingNo, paymentChannel } = req.body;
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const txnId = `TXN-${Date.now()}`;
+        await conn.execute(
+            `INSERT INTO bank_transactions (transaction_id, dealer_id, amount, transaction_type, payment_channel, bank_account_no, routing_no, utr_ref_no, status) 
+             VALUES (?, ?, ?, 'PAYMENT_IN', ?, ?, ?, ?, 'SETTLED')`,
+            [txnId, dealerId, amount, paymentChannel, bankAccount, routingNo, utrRef]
+        );
+
+        const [dealerRows] = await conn.execute(`SELECT current_balance FROM dealers WHERE dealer_id = ? FOR UPDATE`, [dealerId]);
+        const newBalance = parseFloat(dealerRows[0].current_balance) + parseFloat(amount);
+
+        await conn.execute(
+            `INSERT INTO dealer_ledger (dealer_id, transaction_id, credit, balance, description) VALUES (?, ?, ?, ?, ?)`,
+            [dealerId, txnId, amount, newBalance, `Real-time payment via ${paymentChannel} (UTR: ${utrRef})`]
+        );
+
+        await conn.execute(`UPDATE dealers SET current_balance = ? WHERE dealer_id = ?`, [newBalance, dealerId]);
+
+        await conn.commit();
+        res.json({ success: true, message: "Payment processed & Ledger updated in real time", newBalance });
+    } catch (err) {
+        await conn.rollback();
+        res.status(500).json({ success: false, error: err.message });
+    } finally {
+        conn.release();
+    }
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`ERP Engine Server running on port ${PORT}`));
