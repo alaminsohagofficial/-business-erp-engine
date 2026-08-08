@@ -1,0 +1,473 @@
+openapi: 3.0.3
+info:
+  title: VatOne ERP & DBBL Smart Reconciliation Engine API
+  description: |
+    Enterprise-grade financial synchronization and bank-ledger reconciliation gateway.
+    
+    Designed specifically for seamless SAP/ERP ledger alignment, Dutch-Bangla Bank PLC (DBBL)
+    Electronic Fund Transfer (EFT) parsing, True Advance Balance calculation, and Gemini AI 2.5 Flash-powered dispute resolution.
+  version: 1.0.0
+  contact:
+    name: VatOne Engineering Team
+    email: support@vatone.io
+    url: https://github.com/alaminsohagofficial/-business-erp-engine
+
+servers:
+  - url: https://api.vatone.internal/v1
+    description: Production Reconciliation Gateway
+  - url: https://sandbox-api.vatone.internal/v1
+    description: Sandbox / UAT Gateway
+
+paths:
+  /eft/upload:
+    post:
+      summary: Upload DBBL EFT Settlement File
+      description: |
+        Ingests and normalizes raw DBBL Electronic Fund Transfer (EFT) transaction files (CSV/XLSX).
+        Extracts DBBL Trace IDs, settlement timestamps, dealer account metadata, and transaction amounts.
+      operationId: uploadEftFile
+      tags:
+        - DBBL EFT Ingestion
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - statement_date
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: DBBL EFT settlement file (.csv or .xlsx)
+                statement_date:
+                  type: string
+                  format: date
+                  example: "2026-08-08"
+                  description: Statement date for audit verification
+                bank_branch_code:
+                  type: string
+                  example: "DBBL-DHAKA-001"
+                  description: Optional branch routing code
+                auto_reconcile:
+                  type: boolean
+                  default: true
+                  description: Immediately trigger automated dual-key matching upon parsing completion
+      responses:
+        '202':
+          description: EFT File accepted for asynchronous processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+              example:
+                batch_id: "EFT-20260808-88392"
+                status: "PROCESSING"
+                filename: "DBBL_EFT_SETTLEMENT_20260808.xlsx"
+                total_records_detected: 1250
+                total_volume_bdt: 45890000.00
+                message: "File ingested successfully. Background parsing and normalization initiated."
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /reconciliation/run:
+    post:
+      summary: Trigger Automated Dual-Key Reconciliation Run
+      description: |
+        Executes dual-key matching (DBBL Trace ID == SAP LID / Reference ID) and calculates
+        True Advance Balances for unposted bank credits. Automatically identifies candidates for
+        Provisional Gatepass Pass.
+      operationId: runReconciliation
+      tags:
+        - Matching & Ledger Alignment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconciliationRunRequest'
+            example:
+              batch_id: "EFT-20260808-88392"
+              tolerance_amount: 0.00
+              apply_provisional_pass: true
+              dealer_ids:
+                - "DLR-99401"
+                - "DLR-88123"
+      responses:
+        '200':
+          description: Reconciliation execution completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconciliationRunResponse'
+              example:
+                job_id: "JOB-REC-20260808-001"
+                batch_id: "EFT-20260808-88392"
+                status: "COMPLETED"
+                execution_time_seconds: 1.45
+                summary:
+                  total_processed: 1250
+                  exact_matches: 1120
+                  provisional_passes: 95
+                  discrepancies: 35
+                  total_matched_bdt: 41200000.00
+                  total_provisional_bdt: 3490000.00
+                  total_discrepancy_bdt: 1200000.00
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /reconciliation/batches/{batch_id}:
+    get:
+      summary: Fetch Reconciliation Batch Results & Ledger Lines
+      description: |
+        Retrieves detailed line-by-line reconciliation status for a specific batch,
+        including SAP Line Item Document (LID) references, matched Trace IDs, and Provisional Pass flags.
+      operationId: getBatchResults
+      tags:
+        - Matching & Ledger Alignment
+      parameters:
+        - name: batch_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "EFT-20260808-88392"
+        - name: status_filter
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ALL, MATCHED, PROVISIONAL_PASS, DISPUTE]
+            default: ALL
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Detailed list of reconciled line items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResultsResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /reconciliation/disputes/{dispute_id}/ai-notice:
+    post:
+      summary: Generate Gemini 2.5 Flash AI Audit Dispute Notice
+      description: |
+        Leverages Google Gemini 2.5 Flash LLM to analyze unposted or disputed DBBL transactions
+        against historical SAP postings. Drafts a formal audit dispute notice with context analysis.
+      operationId: generateAiDisputeNotice
+      tags:
+        - Gemini AI Audit & Dispute
+      parameters:
+        - name: dispute_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "DSP-2026-0912"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiNoticeRequest'
+            example:
+              recipient_email: "audit.finance@company.com"
+              audit_tone: "FORMAL"
+              include_ledger_history: true
+      responses:
+        '200':
+          description: AI Audit Notice successfully drafted and logged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiNoticeResponse'
+              example:
+                dispute_id: "DSP-2026-0912"
+                notice_reference_no: "AUD-GEM-2026-0441"
+                ai_model_used: "gemini-2.5-flash"
+                ai_analysis_summary: "Transaction trace #TRC-881023 missing SAP LID posting due to account number mismatch in EFT remarks field."
+                generated_subject: "AUDIT NOTICE: DBBL Credit Hold Discrepancy - Dealer DLR-99401"
+                generated_body_markdown: |
+                  ## Financial Audit & Reconciliation Variance Notice
+                  **Ref No:** AUD-GEM-2026-0441  
+                  **Dealer ID:** DLR-99401 (Butterfly Electronics - Chittagong)  
+                  
+                  ### Discrepancy Detail
+                  DBBL EFT Credit of **BDT 450,000.00** received on **08-Aug-2026 (Trace ID: TRC-881023)** remains unposted in SAP Ledger due to missing LID mapping.
+
+                  ### Recommended Action
+                  Post manual G/L journal entry referencing LID #10029348 to clear false credit hold.
+                recommended_action: "MANUAL_GL_POSTING"
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /dealers/{dealer_id}/true-balance:
+    get:
+      summary: Calculate True Advance Purchasing Power
+      description: |
+        Calculates real-time purchasing power by adding unposted DBBL EFT credits to current SAP ledger balance:
+        True Advance Balance = SAP Balance + Unposted DBBL Credits.
+      operationId: getTrueAdvanceBalance
+      tags:
+        - Dealer Ledger & Credit Holds
+      parameters:
+        - name: dealer_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "DLR-99401"
+      responses:
+        '200':
+          description: Real-time True Advance Balance details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrueBalanceResponse'
+              example:
+                dealer_id: "DLR-99401"
+                dealer_name: "Butterfly Electronics Ltd."
+                current_sap_balance_bdt: 120000.00
+                unposted_dbbl_credits_bdt: 450000.00
+                true_advance_balance_bdt: 570000.00
+                pending_order_value_bdt: 500000.00
+                sap_credit_hold_active: true
+                provisional_gatepass_eligible: true
+                reasons:
+                  - "True Advance Balance (570,000 BDT) covers Pending Order Value (500,000 BDT)."
+                  - "Unposted credit verified via DBBL Trace ID #TRC-881023."
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-VatOne-Api-Key
+      description: API Key authentication for corporate ERP integration gateway
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  security:
+    - ApiKeyAuth: []
+    - BearerAuth: []
+
+  schemas:
+    FileUploadResponse:
+      type: object
+      properties:
+        batch_id:
+          type: string
+        status:
+          type: string
+        filename:
+          type: string
+        total_records_detected:
+          type: integer
+        total_volume_bdt:
+          type: number
+        message:
+          type: string
+
+    ReconciliationRunRequest:
+      type: object
+      required:
+        - batch_id
+      properties:
+        batch_id:
+          type: string
+        tolerance_amount:
+          type: number
+          default: 0.00
+        apply_provisional_pass:
+          type: boolean
+          default: true
+        dealer_ids:
+          type: array
+          items:
+            type: string
+
+    ReconciliationRunResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+        batch_id:
+          type: string
+        status:
+          type: string
+        execution_time_seconds:
+          type: number
+        summary:
+          type: object
+          properties:
+            total_processed:
+              type: integer
+            exact_matches:
+              type: integer
+            provisional_passes:
+              type: integer
+            discrepancies:
+              type: integer
+            total_matched_bdt:
+              type: number
+            total_provisional_bdt:
+              type: number
+            total_discrepancy_bdt:
+              type: number
+
+    BatchResultsResponse:
+      type: object
+      properties:
+        batch_id:
+          type: string
+        total_count:
+          type: integer
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReconciliationRecord'
+
+    ReconciliationRecord:
+      type: object
+      properties:
+        record_id:
+          type: string
+        dbbl_trace_id:
+          type: string
+        sap_lid:
+          type: string
+        dealer_id:
+          type: string
+        amount_bdt:
+          type: number
+        status:
+          type: string
+          enum: [MATCHED, PROVISIONAL_PASS, DISPUTE]
+        matching_rule_applied:
+          type: string
+        gatepass_released:
+          type: boolean
+
+    AiNoticeRequest:
+      type: object
+      required:
+        - recipient_email
+      properties:
+        recipient_email:
+          type: string
+          format: email
+        audit_tone:
+          type: string
+          enum: [FORMAL, URGENT, EXECUTIVE]
+          default: FORMAL
+        include_ledger_history:
+          type: boolean
+          default: true
+
+    AiNoticeResponse:
+      type: object
+      properties:
+        dispute_id:
+          type: string
+        notice_reference_no:
+          type: string
+        ai_model_used:
+          type: string
+        ai_analysis_summary:
+          type: string
+        generated_subject:
+          type: string
+        generated_body_markdown:
+          type: string
+        recommended_action:
+          type: string
+
+    TrueBalanceResponse:
+      type: object
+      properties:
+        dealer_id:
+          type: string
+        dealer_name:
+          type: string
+        current_sap_balance_bdt:
+          type: number
+        unposted_dbbl_credits_bdt:
+          type: number
+        true_advance_balance_bdt:
+          type: number
+        pending_order_value_bdt:
+          type: number
+        sap_credit_hold_active:
+          type: boolean
+        provisional_gatepass_eligible:
+          type: boolean
+        reasons:
+          type: array
+          items:
+            type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequestError:
+      description: Invalid request parameters or body format
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ValidationError:
+      description: Validation failed for fields
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFoundError:
+      description: Requested resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
