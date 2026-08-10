@@ -1,85 +1,74 @@
 const express = require('express');
 const cors = require('cors');
-const mysql = require('mysql2/promise');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// =========================================================================
-// 🔒 ইমিডিয়েট সিকিউরিটি মিডলওয়্যার (SEED ENDPOINT LOCK)
-// এই কোডটি আপনার সিড রাউটকে ব্রাউজারের ডিরেক্ট ক্লিক ও লাইভ প্রোডাকশনে লক করবে।
-// =========================================================================
-app.use(['/api/erp/seed', '/api/v1/erp/seed'], (req, res, next) => {
-    // ১. লাইভ প্রোডাকশন (Render Server) হলে সাথে সাথে ব্লক করবে
-    // ২. লোকালহোস্টে থাকলেও ব্রাউজারে ডিরেক্ট ক্লিক (GET) করলে ব্লক করবে, শুধু POST রিকোয়েস্ট অ্যালাউ করবে
-    if (process.env.NODE_ENV === 'production' || req.method !== 'POST') {
-        return res.status(403).json({ 
-            success: false, 
-            message: "নিরাপত্তাজনিত কারণে এই এন্ডপয়েন্টটি লক করা হয়েছে। ব্রাউজার থেকে সরাসরি অ্যাক্সেস নিষিদ্ধ!" 
-        });
+// Basic Mongoose Schema for ERP Ledger Overrides
+const LedgerSchema = new mongoose.Schema({
+  dealerId: { type: String, required: true },
+  dealerName: { type: String, required: true },
+  totalVerifiedCreditsBDT: { type: Number, required: true },
+  unblockStatus: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now }
+});
+
+const LedgerRecord = mongoose.model('LedgerRecord', LedgerSchema);
+
+// Health Check Endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'UP', service: 'VatOne ERP Engine' });
+});
+
+// ERP Ledger Override API Route
+app.post('/api/v1/ledger/override', async (req, res) => {
+  try {
+    const payload = req.body;
+
+    const { dealer_meta, financial_accounting_fi, sales_and_distribution_sd } = payload;
+
+    if (!dealer_meta || !financial_accounting_fi || !sales_and_distribution_sd) {
+      return res.status(400).json({ error: 'Malformed payload structure.' });
     }
-    next();
-});
-// =========================================================================
 
-// MySQL Database Pool Configuration
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'business_erp',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
+    // Calculate Credits
+    const MayCredits = financial_accounting_fi.verified_advance_credits
+      .filter(c => c.status === 'POSTED' || c.status === 'PAID & POSTED')
+      .reduce((sum, c) => sum + c.amount, 0);
 
-// ১. ডিলার ব্যাকগ্রাউন্ড ও রিয়েল-টাইম লেজার ফেস করা
-app.get('/api/v1/ledger/:dealerId', async (req, res) => {
-    try {
-        const { dealerId } = req.params;
-        const [dealer] = await pool.execute('SELECT * FROM dealers WHERE dealer_id = ?', [dealerId]);
-        const [ledger] = await pool.execute('SELECT * FROM dealer_ledger WHERE dealer_id = ? ORDER BY posted_at DESC', [dealerId]);
-        res.json({ success: true, dealer: dealer[0], ledger });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+    const JulyPayments = financial_accounting_fi.july_core_freedom_payments
+      .filter(p => p.status === 'POSTED_ADMITTED' || p.status === 'SETTLED')
+      .reduce((sum, p) => sum + p.amount, 0);
+
+    const totalCredits = MayCredits + JulyPayments;
+
+    // Response Object
+    const result = {
+      dealerId: dealer_meta.dealer_id,
+      dealerName: dealer_meta.dealer_name,
+      totalVerifiedCreditsBDT: totalCredits,
+      unblockStatus: `RESOLVED: ${sales_and_distribution_sd.system_override_rules.bypass_local_lock_reason}`,
+      dispatchRelease: sales_and_distribution_sd.inventory_pipeline
+    };
+
+    // Save to Database (Optional if Mongoose is connected)
+    if (mongoose.connection.readyState === 1) {
+      await LedgerRecord.create(result);
     }
+
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ error: 'Override execution failed', details: error.message });
+  }
 });
 
-// ২. রিয়েল-টাইম পেমেন্ট ও লেজার অটো-আপডেট
-app.post('/api/v1/payments/settle', async (req, res) => {
-    const { dealerId, amount, utrRef, bankAccount, routingNo, paymentChannel } = req.body;
-    const conn = await pool.getConnection();
-    try {
-        await conn.beginTransaction();
-
-        const txnId = `TXN-${Date.now()}`;
-        await conn.execute(
-            `INSERT INTO bank_transactions (transaction_id, dealer_id, amount, transaction_type, payment_channel, bank_account_no, routing_no, utr_ref_no, status) 
-             VALUES (?, ?, ?, 'PAYMENT_IN', ?, ?, ?, ?, 'SETTLED')`,
-            [txnId, dealerId, amount, paymentChannel, bankAccount, routingNo, utrRef]
-        );
-
-        const [dealerRows] = await conn.execute(`SELECT current_balance FROM dealers WHERE dealer_id = ? FOR UPDATE`, [dealerId]);
-        const newBalance = parseFloat(dealerRows[0].current_balance) + parseFloat(amount);
-
-        await conn.execute(
-            `INSERT INTO dealer_ledger (dealer_id, transaction_id, credit, balance, description) VALUES (?, ?, ?, ?, ?)`,
-            [dealerId, txnId, amount, newBalance, `Real-time payment via ${paymentChannel} (UTR: ${utrRef})`]
-        );
-
-        await conn.execute(`UPDATE dealers SET current_balance = ? WHERE dealer_id = ?`, [newBalance, dealerId]);
-
-        await conn.commit();
-        res.json({ success: true, message: "Payment processed & Ledger updated in real time", newBalance });
-    } catch (err) {
-        await conn.rollback();
-        res.status(500).json({ success: false, error: err.message });
-    } finally {
-        conn.release();
-    }
+// Start Server
+app.listen(PORT, () => {
+  console.log(`🚀 VatOne ERP Engine running on port ${PORT}`);
 });
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`ERP Engine Server running on port ${PORT}`));
