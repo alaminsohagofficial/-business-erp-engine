@@ -7,15 +7,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/vatone_erp';
 
-// ==========================================
-// 1. MIDDLEWARE CONFIGURATION
-// ==========================================
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// ==========================================
-// 2. MONGOOSE SCHEMA & MODEL
-// ==========================================
+// Mongoose Schema
 const ledgerOverrideSchema = new mongoose.Schema({
   dealerId: { type: String, required: true, index: true },
   dealerName: { type: String, required: true },
@@ -34,15 +30,11 @@ const ledgerOverrideSchema = new mongoose.Schema({
 
 const LedgerOverrideLog = mongoose.model('LedgerOverrideLog', ledgerOverrideSchema);
 
-// MongoDB Database Connection
+// MongoDB Connection
 mongoose
   .connect(MONGO_URI)
   .then(() => console.log('✅ Connected to MongoDB Database'))
   .catch((err) => console.warn('⚠️ Running without active DB log:', err.message));
-
-// ==========================================
-// 3. API ROUTES
-// ==========================================
 
 // Health Check Endpoint
 app.get('/health', (req, res) => {
@@ -53,12 +45,11 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Primary Ledger Reconciliation & SD Override Endpoint
+// Primary Ledger Override API
 app.post('/api/v1/ledger/override', async (req, res) => {
   try {
     const { dealer_meta, financial_accounting_fi, sales_and_distribution_sd } = req.body;
 
-    // Payload Structure Validation
     if (!dealer_meta || !financial_accounting_fi || !sales_and_distribution_sd) {
       return res.status(400).json({
         success: false,
@@ -67,19 +58,16 @@ app.post('/api/v1/ledger/override', async (req, res) => {
       });
     }
 
-    // 1. Calculate Verified May RTGS Advance Credits
     const mayCredits = (financial_accounting_fi.verified_advance_credits || [])
       .filter(credit => credit.status === 'POSTED' || credit.status === 'PAID & POSTED')
       .reduce((sum, credit) => sum + (Number(credit.amount) || 0), 0);
 
-    // 2. Calculate Admitted July Freedom Payments
     const julyPayments = (financial_accounting_fi.july_core_freedom_payments || [])
       .filter(payment => payment.status === 'POSTED_ADMITTED' || payment.status === 'SETTLED')
       .reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0);
 
     const totalVerifiedCredits = mayCredits + julyPayments;
 
-    // 3. Verify SD Module Override Rules
     const overrideRules = sales_and_distribution_sd.system_override_rules || {};
     if (!overrideRules.enforce_portal_unblock) {
       return res.status(403).json({
@@ -91,7 +79,6 @@ app.post('/api/v1/ledger/override', async (req, res) => {
 
     const inventoryPipeline = sales_and_distribution_sd.inventory_pipeline || {};
 
-    // 4. Create Audit Log Record
     const overrideRecord = {
       dealerId: dealer_meta.dealer_id,
       dealerName: dealer_meta.dealer_name,
@@ -107,12 +94,10 @@ app.post('/api/v1/ledger/override', async (req, res) => {
       dispatchStatus: 'FORCE_RELEASE_ORDER_APPROVED'
     };
 
-    // Save to MongoDB if connection is ready
     if (mongoose.connection.readyState === 1) {
       await LedgerOverrideLog.create(overrideRecord);
     }
 
-    // 5. Return Formatted Success Response
     return res.status(200).json({
       success: true,
       message: 'Ledger reconciliation completed. SD Portal hold bypassed successfully.',
@@ -146,9 +131,7 @@ app.use((req, res) => {
   res.status(404).json({ success: false, error: 'Endpoint Not Found' });
 });
 
-// ==========================================
-// 4. START SERVER
-// ==========================================
+// Start Server
 app.listen(PORT, () => {
   console.log(`🚀 VatOne ERP Engine running on port ${PORT}`);
 });
