@@ -3,5 +3,4 @@
   command = ""
 
 [build.environment]
-  NODE_VERSION = "none"
-  PYTHON_VERSION = "none"
+  PYTHON_VERSION = "3.11"
