@@ -1,5 +1,77 @@
 const express = require('express');
+const { GoogleGenAI } = require('@google/genai');
 const router = express.Router();
+
+// Initialize Gemini Client
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+/**
+ * @route POST /reconciliation/disputes/analyze
+ * @desc Auto-analyze discrepancies using Gemini AI
+ */
+router.post('/analyze', async (req, res) => {
+  const { central_ledger, partner_invoices, dealer_id } = req.body;
+
+  // Validate dealer_id strictly
+  if (!dealer_id) {
+    return res.status(400).json({
+      code: "VALIDATION_ERROR",
+      message: "dealer_id is strictly required for running audit reconciliation.",
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  if (!central_ledger || !partner_invoices) {
+    return res.status(400).json({
+      code: "VALIDATION_ERROR",
+      message: "Both central_ledger and partner_invoices data are required.",
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  try {
+    const prompt = `
+      You are an automated ERP & SAP reconciliation auditor.
+      Compare the Central Ledger with Partner Invoices for Dealer ID: ${dealer_id}.
+      Detect discrepancies, missing trace IDs, and ledger mismatches.
+
+      Central Ledger:
+      ${JSON.stringify(central_ledger)}
+
+      Partner Invoices:
+      ${JSON.stringify(partner_invoices)}
+
+      Provide a strict JSON response with:
+      - is_balanced (boolean)
+      - total_discrepancy_bdt (number)
+      - audit_summary (string)
+      - unmatched_records (array of objects with invoice_no, expected_amount, found_amount, difference_bdt, reason)
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json'
+      }
+    });
+
+    const analysis = JSON.parse(response.text);
+
+    res.status(200).json({
+      success: true,
+      audit_notice_ref: `AUD-GEM-${Date.now().toString().slice(-4)}`,
+      analysis,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: "AI_PROCESSING_ERROR",
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
 
 /**
  * @route GET /reconciliation/disputes
@@ -24,9 +96,6 @@ router.get('/', async (req, res) => {
     query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
     params.push(parseInt(limit, 10), parseInt(offset, 10));
 
-    // Execute query using your db pool (e.g., pg pool)
-    // const { rows } = await db.query(query, params);
-
     res.status(200).json({
       total_count: 1,
       limit: parseInt(limit, 10),
@@ -36,7 +105,7 @@ router.get('/', async (req, res) => {
           dispute_id: "DSP-2026-0912",
           batch_id: "EFT-20260808-88392",
           dbbl_trace_id: "TRC-881023",
-          dealer_id: dealer_id || "DLR-99401",
+          dealer_id: dealer_id || "UNASSIGNED",
           amount_bdt: 450000.00,
           status: status,
           created_at: new Date().toISOString()
@@ -60,9 +129,6 @@ router.get('/:dispute_id', async (req, res) => {
   const { dispute_id } = req.params;
 
   try {
-    // const { rows } = await db.query('SELECT * FROM reconciliation_disputes WHERE dispute_id = $1', [dispute_id]);
-    // if (rows.length === 0) return res.status(404).json({ code: 'NOT_FOUND', message: 'Dispute not found' });
-
     res.status(200).json({
       dispute_id: dispute_id,
       batch_id: "EFT-20260808-88392",
@@ -104,13 +170,6 @@ router.patch('/:dispute_id', async (req, res) => {
   }
 
   try {
-    // const updateQuery = `
-    //   UPDATE reconciliation_disputes 
-    //   SET status = $1, resolution_notes = $2, sap_lid_reference = $3, updated_at = CURRENT_TIMESTAMP 
-    //   WHERE dispute_id = $4 RETURNING *
-    // `;
-    // const { rows } = await db.query(updateQuery, [status, resolution_notes, sap_lid_reference, dispute_id]);
-
     res.status(200).json({
       dispute_id: dispute_id,
       status: status,
