@@ -1,137 +1,128 @@
 import React, { useState, useEffect } from 'react';
 
-export default function ERPDashboard() {
-    const [dealerId, setDealerId] = useState('DEAL002905');
-    const [dealer, setDealer] = useState(null);
-    const [ledger, setLedger] = useState([]);
-    const [form, setForm] = useState({
-        amount: '',
-        utrRef: '',
-        bankAccount: '20503910100020103',
-        routingNo: '125260433',
-        paymentChannel: 'RTGS'
-    });
+const Dashboard = () => {
+  const [disputes, setDisputes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [auditResult, setAuditResult] = useState(null);
+  const [dealerId, setDealerId] = useState('DLR-MINISTER-MYONE-01');
 
-    const fetchLedger = async () => {
-        try {
-            const res = await fetch(`http://localhost:5000/api/v1/ledger/${dealerId}`);
-            const data = await res.json();
-            if (data.success) {
-                setDealer(data.dealer);
-                setLedger(data.ledger);
-            }
-        } catch (err) {
-            console.error("Fetch Error:", err);
-        }
+  // Fetch disputes on load
+  useEffect(() => {
+    fetchDisputes();
+  }, []);
+
+  const fetchDisputes = async () => {
+    try {
+      const res = await fetch('/reconciliation/disputes');
+      const data = await res.json();
+      if (data.records) setDisputes(data.records);
+    } catch (err) {
+      console.error('Failed to fetch disputes:', err);
+    }
+  };
+
+  const handleRunAiAudit = async () => {
+    setLoading(true);
+    setAuditResult(null);
+
+    const payload = {
+      dealer_id: dealerId,
+      central_ledger: [
+        { invoice_no: 'INV-2026-001', amount: 250000, trace_id: 'TRC-101', status: 'POSTED' },
+        { invoice_no: 'INV-2026-002', amount: 180000, trace_id: 'TRC-102', status: 'POSTED' }
+      ],
+      partner_invoices: [
+        { invoice_no: 'INV-2026-001', amount: 250000, trace_id: 'TRC-101' },
+        { invoice_no: 'INV-2026-002', amount: 200000, trace_id: 'TRC-102' }
+      ]
     };
 
-    useEffect(() => {
-        fetchLedger();
-    }, [dealerId]);
+    try {
+      const res = await fetch('/reconciliation/disputes/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      setAuditResult(data);
+    } catch (err) {
+      console.error('AI Audit execution failed:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleSettlePayment = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await fetch('http://localhost:5000/api/v1/payments/settle', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ dealerId, ...form })
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert("Payment Settled Successfully!");
-                fetchLedger();
-            }
-        } catch (err) {
-            alert("Payment Settlement Failed");
-        }
-    };
+  return (
+    <div style={{ padding: '24px', fontFamily: 'sans-serif', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>
+        Salsabilah Amin Group - Central ERP & Audit Dashboard
+      </h1>
+      <p style={{ color: '#64748b', marginBottom: '24px' }}>
+        Automated SAP Reconciliation & AI Dispute Auditor (Minister MyOne & Butterfly Electronics)
+      </p>
 
-    return (
-        <div className="min-h-screen bg-slate-900 text-slate-100 p-6 font-sans">
-            {/* Header */}
-            <div className="flex justify-between items-center border-b border-slate-700 pb-4 mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-sky-400">Business ERP Engine</h1>
-                    <p className="text-sm text-slate-400">Real-Time Treasury & Dealer Ledger System</p>
-                </div>
-                <div className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-right">
-                    <span className="text-xs text-slate-400 block">Current Balance</span>
-                    <span className="text-xl font-extrabold text-emerald-400">
-                        BDT {dealer ? parseFloat(dealer.current_balance).toLocaleString() : '0.00'}
-                    </span>
-                </div>
-            </div>
+      {/* Action Bar */}
+      <div style={{ backgroundColor: '#fff', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '24px' }}>
+        <label style={{ fontWeight: '600', marginRight: '12px' }}>Target Partner/Dealer ID:</label>
+        <input 
+          type="text" 
+          value={dealerId} 
+          onChange={(e) => setDealerId(e.target.value)} 
+          style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', marginRight: '12px' }}
+        />
+        <button 
+          onClick={handleRunAiAudit} 
+          disabled={loading}
+          style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+        >
+          {loading ? 'Analyzing with Gemini AI...' : 'Run Automated AI Audit'}
+        </button>
+      </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Payment Entry Form */}
-                <div className="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
-                    <h2 className="text-lg font-semibold mb-4 text-sky-300">New RTGS / Bank Payment Entry</h2>
-                    <form onSubmit={handleSettlePayment} className="space-y-4">
-                        <div>
-                            <label className="text-xs text-slate-400">Dealer ID</label>
-                            <input 
-                                type="text" 
-                                value={dealerId} 
-                                onChange={(e) => setDealerId(e.target.value)}
-                                className="w-full bg-slate-900 border border-slate-700 p-2.5 rounded text-sm text-white focus:border-sky-500 outline-none" 
-                            />
-                        </div>
-                        <div>
-                            <label className="text-xs text-slate-400">Amount (BDT)</label>
-                            <input 
-                                type="number" 
-                                placeholder="1000000.00" 
-                                onChange={(e) => setForm({...form, amount: e.target.value})}
-                                className="w-full bg-slate-900 border border-slate-700 p-2.5 rounded text-sm text-white focus:border-sky-500 outline-none" 
-                                required 
-                            />
-                        </div>
-                        <div>
-                            <label className="text-xs text-slate-400">Bank UTR / Ref Number</label>
-                            <input 
-                                type="text" 
-                                placeholder="e.g. UTR12345678" 
-                                onChange={(e) => setForm({...form, utrRef: e.target.value})}
-                                className="w-full bg-slate-900 border border-slate-700 p-2.5 rounded text-sm text-white focus:border-sky-500 outline-none" 
-                                required 
-                            />
-                        </div>
-                        <button type="submit" className="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2.5 rounded transition">
-                            Process Real-Time Payment
-                        </button>
-                    </form>
-                </div>
-
-                {/* Dealer Ledger Table */}
-                <div className="lg:col-span-2 bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
-                    <h2 className="text-lg font-semibold mb-4 text-sky-300">Real-time Dealer Ledger</h2>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm border-collapse">
-                            <thead>
-                                <tr className="border-b border-slate-700 text-slate-400 bg-slate-900/50">
-                                    <th className="p-3">Date</th>
-                                    <th className="p-3">Description</th>
-                                    <th className="p-3 text-right">Debit</th>
-                                    <th className="p-3 text-right">Credit</th>
-                                    <th className="p-3 text-right">Balance</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-700">
-                                {ledger.map((row) => (
-                                    <tr key={row.ledger_id} className="hover:bg-slate-700/30">
-                                        <td className="p-3 text-xs text-slate-400">{new Date(row.posted_at).toLocaleDateString()}</td>
-                                        <td className="p-3 font-medium text-slate-200">{row.description}</td>
-                                        <td className="p-3 text-right text-rose-400">{row.debit > 0 ? `৳${parseFloat(row.debit).toLocaleString()}` : '-'}</td>
-                                        <td className="p-3 text-right text-emerald-400">{row.credit > 0 ? `৳${parseFloat(row.credit).toLocaleString()}` : '-'}</td>
-                                        <td className="p-3 text-right font-bold text-sky-300">৳{parseFloat(row.balance).toLocaleString()}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+      {/* AI Audit Result Box */}
+      {auditResult && (
+        <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px', borderLeft: '4px solid #2563eb', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
+            Gemini AI Reconciliation Result ({auditResult.audit_notice_ref})
+          </h2>
+          <p><strong>Status:</strong> {auditResult.analysis?.is_balanced ? '✅ Balanced' : '⚠️ Discrepancy Found'}</p>
+          <p><strong>Total Discrepancy:</strong> BDT {auditResult.analysis?.total_discrepancy_bdt?.toLocaleString()}</p>
+          <p><strong>Summary:</strong> {auditResult.analysis?.audit_summary}</p>
         </div>
-    );
-}
+      )}
+
+      {/* Disputes Table */}
+      <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>Active Financial Disputes</h2>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <thead>
+            <tr style={{ borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
+              <th style={{ padding: '10px' }}>Dispute ID</th>
+              <th style={{ padding: '10px' }}>Trace ID</th>
+              <th style={{ padding: '10px' }}>Dealer ID</th>
+              <th style={{ padding: '10px' }}>Amount (BDT)</th>
+              <th style={{ padding: '10px' }}>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {disputes.map((item) => (
+              <tr key={item.dispute_id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: '10px' }}>{item.dispute_id}</td>
+                <td style={{ padding: '10px' }}>{item.dbbl_trace_id}</td>
+                <td style={{ padding: '10px' }}>{item.dealer_id}</td>
+                <td style={{ padding: '10px' }}>BDT {item.amount_bdt?.toLocaleString()}</td>
+                <td style={{ padding: '10px' }}>
+                  <span style={{ padding: '4px 8px', borderRadius: '4px', backgroundColor: '#fef3c7', color: '#92400e', fontSize: '12px', fontWeight: '600' }}>
+                    {item.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
