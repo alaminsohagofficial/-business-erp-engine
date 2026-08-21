@@ -3,6 +3,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+const disputesRouter = require('./disputes.router.js');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/vatone_erp';
@@ -44,6 +46,9 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Mount AI Reconciliation & Disputes Router
+app.use('/reconciliation/disputes', disputesRouter);
 
 // Primary Ledger Override API
 app.post('/api/v1/ledger/override', async (req, res) => {
