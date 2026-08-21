@@ -12,7 +12,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 router.post('/analyze', async (req, res) => {
   const { central_ledger, partner_invoices, dealer_id } = req.body;
 
-  // Validate dealer_id strictly
+  // Strict Validation
   if (!dealer_id) {
     return res.status(400).json({
       code: "VALIDATION_ERROR",
@@ -58,14 +58,14 @@ router.post('/analyze', async (req, res) => {
 
     const analysis = JSON.parse(response.text);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       audit_notice_ref: `AUD-GEM-${Date.now().toString().slice(-4)}`,
       analysis,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       code: "AI_PROCESSING_ERROR",
       message: error.message,
       timestamp: new Date().toISOString()
@@ -96,7 +96,7 @@ router.get('/', async (req, res) => {
     query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
     params.push(parseInt(limit, 10), parseInt(offset, 10));
 
-    res.status(200).json({
+    return res.status(200).json({
       total_count: 1,
       limit: parseInt(limit, 10),
       offset: parseInt(offset, 10),
@@ -113,7 +113,7 @@ router.get('/', async (req, res) => {
       ]
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       code: "INTERNAL_SERVER_ERROR",
       message: error.message,
       timestamp: new Date().toISOString()
@@ -129,7 +129,7 @@ router.get('/:dispute_id', async (req, res) => {
   const { dispute_id } = req.params;
 
   try {
-    res.status(200).json({
+    return res.status(200).json({
       dispute_id: dispute_id,
       batch_id: "EFT-20260808-88392",
       dbbl_trace_id: "TRC-881023",
@@ -145,7 +145,7 @@ router.get('/:dispute_id', async (req, res) => {
       created_at: new Date().toISOString()
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       code: "INTERNAL_SERVER_ERROR",
       message: error.message,
       timestamp: new Date().toISOString()
@@ -170,7 +170,7 @@ router.patch('/:dispute_id', async (req, res) => {
   }
 
   try {
-    res.status(200).json({
+    return res.status(200).json({
       dispute_id: dispute_id,
       status: status,
       sap_lid_reference: sap_lid_reference || "10029348",
@@ -179,7 +179,7 @@ router.patch('/:dispute_id', async (req, res) => {
       message: "Dispute successfully updated and SAP ledger sync triggered."
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       code: "INTERNAL_SERVER_ERROR",
       message: error.message,
       timestamp: new Date().toISOString()
