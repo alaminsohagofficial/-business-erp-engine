@@ -21,16 +21,28 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Upload artifact
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.' # প্রয়োজন অনুযায়ী এটি './dist' অথবা './build' দিয়ে পরিবর্তন করুন
+          path: './dist' # Vite/Vue হলে './dist', React হলে './build'
 
       - name: Deploy to GitHub Pages
         id: deployment
