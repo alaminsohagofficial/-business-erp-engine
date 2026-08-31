@@ -1,0 +1,49 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: erp-engine-slack-config
+  namespace: erp-engine
+  labels:
+    release: prometheus
+spec:
+  route:
+    groupBy: ['alertname', 'namespace', 'severity']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 4h
+    receiver: 'slack-notifications'
+    routes:
+      - matchers:
+          - name: severity
+            value: critical
+        receiver: 'slack-critical'
+  receivers:
+    - name: 'slack-notifications'
+      slackConfigs:
+        - channel: '#erp-alerts'
+          sendResolved: true
+          apiURL:
+            name: alertmanager-slack-webhook
+            key: slack-webhook-url
+          title: '[{{ .Status | toUpper }}] ERP Engine Warning'
+          text: >-
+            {{ range .Alerts }}
+              *Alert:* {{ .Annotations.summary }}
+              *Description:* {{ .Annotations.description }}
+              *Severity:* `{{ .Labels.severity }}`
+            {{ end }}
+    - name: 'slack-critical'
+      slackConfigs:
+        - channel: '#erp-critical-alerts'
+          sendResolved: true
+          apiURL:
+            name: alertmanager-slack-webhook
+            key: slack-webhook-url
+          title: '🚨 [CRITICAL ALERT] ERP Engine Incident'
+          text: >-
+            {{ range .Alerts }}
+              *Summary:* {{ .Annotations.summary }}
+              *Detail:* {{ .Annotations.description }}
+              *Pod:* `{{ .Labels.pod }}`
+              *Time:* {{ .StartsAt }}
+            {{ end }}
