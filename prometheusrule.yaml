@@ -1,0 +1,69 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: erp-engine-alerts
+  namespace: erp-engine
+  labels:
+    role: alert-rules
+    release: prometheus
+spec:
+  groups:
+    - name: erp_engine.rules
+      rules:
+        - alert: ERPEngineInstanceDown
+          expr: up{namespace="erp-engine", job="erp-engine-service"} == 0
+          for: 2m
+          labels:
+            severity: critical
+            team: devops
+          annotations:
+            summary: "ERP Engine instance is down"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has been unresponsive for more than 2 minutes."
+
+        - alert: ERPEngineHigh5xxErrorRate
+          expr: |
+            (
+              sum(rate(http_requests_total{status=~"5..", namespace="erp-engine"}[5m]))
+              /
+              sum(rate(http_requests_total{namespace="erp-engine"}[5m]))
+            ) * 100 > 5
+          for: 3m
+          labels:
+            severity: critical
+            team: backend
+          annotations:
+            summary: "High HTTP 5xx error rate detected"
+            description: "HTTP 5xx failure rate is currently at {{ $value | printf \"%.2f\" }}% over the last 5 minutes."
+
+        - alert: ERPEngineHighLatencyP95
+          expr: |
+            histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace="erp-engine"}[5m])) by (le, handler)) > 3
+          for: 5m
+          labels:
+            severity: warning
+            team: backend
+          annotations:
+            summary: "API p95 latency spike on {{ $labels.handler }}"
+            description: "95th percentile latency for route {{ $labels.handler }} exceeds 3 seconds (current: {{ $value | printf \"%.2f\" }}s)."
+
+        - alert: DBBLReconciliationMismatchSpike
+          expr: |
+            increase(dbbl_reconciliation_mismatches_total{namespace="erp-engine"}[15m]) > 10
+          for: 1m
+          labels:
+            severity: critical
+            team: finance-ops
+          annotations:
+            summary: "High DBBL EFT reconciliation mismatch rate"
+            description: "More than 10 Dual-Key reconciliation mismatches detected in the past 15 minutes. Verification required."
+
+        - alert: ERPEngineContainerCrashLooping
+          expr: |
+            rate(kube_pod_container_status_restarts_total{namespace="erp-engine"}[15m]) * 60 > 2
+          for: 5m
+          labels:
+            severity: critical
+            team: devops
+          annotations:
+            summary: "ERP Engine container restart loop detected"
+            description: "Container {{ $labels.container }} in pod {{ $labels.pod }} is restarting frequently."
