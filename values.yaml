@@ -1,0 +1,144 @@
+global:
+  environment: production
+  namespace: erp-engine
+
+replicaCount: 3
+
+image:
+  repository: ghcr.io/alaminsohagofficial/-business-erp-engine
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "erp-engine"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "erp-engine-sa"
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: "8000"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  fsGroup: 10001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "25m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "120"
+  hosts:
+    - host: erp.salsabilahamin.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: erp-engine-tls-secret
+      hosts:
+        - erp.salsabilahamin.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 75
+  targetMemoryUtilizationPercentage: 80
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8000
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8000
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 2
+
+envSecret:
+  DATABASE_URL: "postgresql+asyncpg://erp_user:erp_password@postgres-service:5432/erp_db"
+  REDIS_URL: "redis://redis-service:6379/0"
+  GEMINI_API_KEY: "YOUR_GEMINI_API_KEY_HERE"
+
+# Internal Dependency Options (Bitnami Subcharts)
+postgresql:
+  enabled: true
+  auth:
+    username: erp_user
+    password: erp_password
+    database: erp_db
+  primary:
+    persistence:
+      enabled: true
+      size: 20Gi
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      size: 5Gi
+
+monitoring:
+  serviceMonitor:
+    enabled: true
+    interval: 15s
+    scrapeTimeout: 10s
+    additionalLabels:
+      release: prometheus
+
+  prometheusRule:
+    enabled: true
+    additionalLabels:
+      role: alert-rules
+      release: prometheus
+    rules:
+      5xxErrorThreshold: 5
+      p95LatencyThresholdSeconds: 3
+      reconciliationMismatchThreshold: 10
+
+  alertmanagerConfig:
+    enabled: true
+    slackWebhookUrl: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK_URL"
+    channelAlerts: "#erp-alerts"
+    channelCritical: "#erp-critical-alerts"
