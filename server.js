@@ -1,31 +1,46 @@
-const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+const ledgerSchema = new mongoose.Schema({
+    entity: { 
+        type: String, 
+        required: true, 
+        enum: ['Butterfly Marketing Ltd.', 'Minister Hi-Tech Park'] 
+    },
+    dealerCode: { 
+        type: String, 
+        required: true 
+    },
+    date: { 
+        type: Date, 
+        required: true 
+    },
+    desc: { 
+        type: String, 
+        required: true 
+    },
+    channel: { 
+        type: String, 
+        required: true, 
+        enum: ['RTGS', 'EFT', 'NexusPay', 'Aggregation'] 
+    },
+    ref: { 
+        type: String, 
+        required: true, 
+        unique: true 
+    },
+    type: { 
+        type: String, 
+        required: true, 
+        enum: ['Credit', 'Debit'] 
+    },
+    amount: { 
+        type: Number, 
+        required: true 
+    },
+    status: { 
+        type: String, 
+        default: 'Reconciled' 
+    }
+}, { timestamps: true });
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Database Connection
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB Connected Successfully'))
-.catch(err => console.error('Database connection error:', err));
-
-// Routes
-const ledgerRoutes = require('./routes/ledgerRoutes');
-app.use('/api/ledgers', ledgerRoutes);
-
-app.get('/', (req, res) => {
-    res.send('Business ERP Engine API is running...');
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+module.exports = mongoose.model('Ledger', ledgerSchema);
