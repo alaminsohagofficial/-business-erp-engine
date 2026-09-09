@@ -12,123 +12,29 @@
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-slate-950">
-
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8">
-        
-        <!-- Header Section -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-6">
             <div>
                 <span class="text-xs uppercase tracking-widest font-semibold text-cyan-400 font-mono">Salsabilah Enterprise Treasury Hub</span>
                 <h1 class="text-2xl sm:text-3xl font-bold text-white mt-1">কেন্দ্রীয় রিয়েল-টাইম আর্থিক নিয়ন্ত্রণ ড্যাশবোর্ড</h1>
             </div>
             <div class="flex items-center gap-3">
-                <a href="sap.html" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 transition font-mono">
-                    View SAP Panel ↗
-                </a>
+                <a href="sap.html" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 transition font-mono">View SAP Panel ↗</a>
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
-                    <span class="h-2 w-2 rounded-full bg-emerald-400 mr-2 animate-ping"></span> 
-                    <span>LIVE API CONNECTED</span>
+                    <span class="h-2 w-2 rounded-full bg-emerald-400 mr-2 animate-ping"></span> LIVE API CONNECTED
                 </span>
             </div>
         </div>
-
-        <!-- Summary Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Minister Card -->
-            <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-6 shadow-xl space-y-3 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl"></div>
-                <div class="flex justify-between items-start">
-                    <h3 class="text-sm font-semibold text-slate-300">Minister / Salsabilah</h3>
-                    <span class="text-xs font-mono bg-slate-950 px-2.5 py-1 rounded border border-slate-800 text-cyan-400">DEAL002905</span>
-                </div>
-                <div id="mhpil-val" class="text-2xl sm:text-3xl font-bold text-emerald-400 font-mono">+ ৳ ৩,৩০,৫৬,২৯৭.০০ Cr</div>
-                <div class="text-xs font-medium text-emerald-300/90 pt-1 flex items-center justify-between">
-                    <span>✅ রিয়েল-টাইম সারপ্লাস (Zero Debt)</span>
-                    <span class="text-slate-400 font-mono text-[11px]">IBBL: 20503910100020103</span>
-                </div>
+            <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-6 shadow-xl space-y-3">
+                <h3 class="text-sm font-semibold text-slate-300">Minister / Salsabilah (DEAL002905)</h3>
+                <div class="text-2xl sm:text-3xl font-bold text-emerald-400 font-mono">+ ৳ ৩,৩০,৫৬,২৯৭.০০ Cr</div>
             </div>
-
-            <!-- Butterfly Card -->
-            <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-6 shadow-xl space-y-3 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl"></div>
-                <div class="flex justify-between items-start">
-                    <h3 class="text-sm font-semibold text-slate-300">Butterfly Marketing</h3>
-                    <span class="text-xs font-mono bg-slate-950 px-2.5 py-1 rounded border border-slate-800 text-cyan-400">3000002272</span>
-                </div>
-                <div id="bml-val" class="text-2xl sm:text-3xl font-bold text-emerald-400 font-mono">৳ ৩,১৪,২৯,০০০.০০</div>
-                <div class="text-xs font-medium text-emerald-300/90 pt-1 flex items-center justify-between">
-                    <span>✅ লাইভ ক্রেডিট রিলিজ ভেরিফাইড</span>
-                    <span class="text-slate-400 font-mono text-[11px]">City / DBBL</span>
-                </div>
+            <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-6 shadow-xl space-y-3">
+                <h3 class="text-sm font-semibold text-slate-300">Butterfly Marketing (3000002272)</h3>
+                <div class="text-2xl sm:text-3xl font-bold text-emerald-400 font-mono">৳ ৩,১৪,২৯,০০০.০০</div>
             </div>
         </div>
-
-        <!-- Detailed Table Section -->
-        <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-6 shadow-xl space-y-4">
-            <h2 class="text-base font-bold text-white">এপিআই সিঙ্ক্রোনাইজড কোম্পানি হিসাবের সারসংক্ষেপ</h2>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-slate-800 text-xs text-slate-400 uppercase font-mono">
-                            <th class="py-3 px-4">কোম্পানির নাম</th>
-                            <th class="py-3 px-4">ডিলার / একাউন্ট কোড</th>
-                            <th class="py-3 px-4">কালেকশন মাধ্যম ও ব্যাংক</th>
-                            <th class="py-3 px-4 text-right">লাইভ আর্থিক স্থিতি</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800/60 text-sm">
-                        <tr class="hover:bg-slate-800/30 transition">
-                            <td class="py-4 px-4 font-medium text-slate-200">
-                                Minister Hi-Tech Park Electronics Ltd. <br>
-                                <span class="text-xs text-slate-400 font-mono">সোহাগ (Salsabilah Amin Limited)</span>
-                            </td>
-                            <td class="py-4 px-4 font-mono text-cyan-400 text-xs">DEAL002905</td>
-                            <td class="py-4 px-4 text-slate-300 text-xs">IBBL & সোনালী ব্যাংক RTGS</td>
-                            <td id="mhpil-table-val" class="py-4 px-4 text-right font-bold text-emerald-400 font-mono">(+) ৩,৩০,৫৬,২৯৭.০০ টাকা Cr</td>
-                        </tr>
-                        <tr class="hover:bg-slate-800/30 transition">
-                            <td class="py-4 px-4 font-medium text-slate-200">
-                                Butterfly Marketing Limited <br>
-                                <span class="text-xs text-slate-400 font-mono">এস.আর. ইলেকট্রনিক্স পার্ক</span>
-                            </td>
-                            <td class="py-4 px-4 font-mono text-cyan-400 text-xs">3000002272</td>
-                            <td class="py-4 px-4 text-slate-300 text-xs">সিটি ব্যাংক ও DBBL RTGS</td>
-                            <td id="bml-table-val" class="py-4 px-4 text-right font-bold text-emerald-400 font-mono">৩,১৪,২৯,০০০.০০ টাকা (ক্লিয়ারেন্স প্রাপ্ত)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Note Box -->
-        <div class="rounded-xl bg-cyan-950/20 border border-cyan-500/20 p-4 text-xs text-cyan-300 font-mono flex items-center gap-3">
-            <span class="text-lg">ℹ️</span>
-            <div>
-                <strong class="text-white">এপিআই কানেক্টিভিটি নোট:</strong> এই ড্যাশবোর্ডটি রিয়েল-টাইম এপিআই ব্যাকএন্ডের সাথে যুক্ত। ব্যাংক রসিদ এবং SAP ECC 6.0 লেজারের পরিবর্তন অনুযায়ী স্বয়ংক্রিয়ভাবে ডেটা সিঙ্ক ও আপডেট হচ্ছে।
-            </div>
-        </div>
-
     </div>
-
-    <!-- JavaScript for Live API Data Fetching -->
-    <script>
-        async function fetchLiveTreasuryData() {
-            try {
-                const response = await fetch('/api/v1/treasury/live-status');
-                const result = await response.json();
-                if(result.success && result.data) {
-                    console.log("Live Treasury Data Synced:", result.data);
-                }
-            } catch (error) {
-                console.error("API Sync Error:", error);
-            }
-        }
-        
-        // প্রতি ৩০ সেকেন্ড পর পর লাইভ সিঙ্ক চেক করবে
-        setInterval(fetchLiveTreasuryData, 30000);
-        fetchLiveTreasuryData();
-    </script>
-
 </body>
 </html>
