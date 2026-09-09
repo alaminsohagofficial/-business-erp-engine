@@ -1,0 +1,29 @@
+{
+  "batch_id": "SAE-BATCH-2026-09-09",
+  "timestamp": "2026-09-09T12:37:00Z",
+  "currency": "BDT",
+  "transactions": [
+    {
+      "tx_id": "TXN-RTGS-98451201",
+      "source_entity": "Minister Hi-Tech Park Electronics Ltd.",
+      "dealer_code": "DEAL002905",
+      "transaction_type": "RTGS",
+      "amount": 33056297.00,
+      "beneficiary_account": "20503910100020103",
+      "bank_name": "Islami Bank Bangladesh PLC",
+      "sap_reference": "5100029481",
+      "status": "CLEARED"
+    },
+    {
+      "tx_id": "TXN-FDD-98451202",
+      "source_entity": "Butterfly Marketing Limited",
+      "dealer_code": "3000002272",
+      "transaction_type": "FDD",
+      "amount": 31429000.00,
+      "beneficiary_account": "3000002272",
+      "bank_name": "City Bank / DBBL",
+      "sap_reference": "BML/TRS/2026/08/3000002272",
+      "status": "RELEASED"
+    }
+  ]
+}
