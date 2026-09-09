@@ -8,9 +8,9 @@ class APISyncEngine:
     def __init__(self, dealer_code="DEAL002905"):
         self.dealer_code = dealer_code
         self.sap_doc = "5100029481"
-        self.google_remittance = 20000000.00  # 2 Crore BDT (Ref: FT26187G00G9999)
-        self.rtgs_clearing = 10400000.00     # 1.04 Crore BDT (Ref: SB-RTGS-9988776655)
-        self.gross_debt = 2583248.00         # Combined sub-ledger debt
+        self.google_remittance = 20000000.00
+        self.rtgs_clearing = 10400000.00
+        self.gross_debt = 2583248.00
         self.api_url = os.getenv("LEDGER_API_URL", "http://localhost:3000/api/v1/sync/ledger")
         self.api_token = os.getenv("API_TOKEN", "")
 
@@ -28,7 +28,6 @@ class APISyncEngine:
         print(f"Target SAP Document Mapping: {self.sap_doc}")
         
         net_buffer = self.calculate_net_buffer()
-        
         payload = {
             "dealer_code": self.dealer_code,
             "sap_posting_doc": self.sap_doc,
@@ -40,7 +39,6 @@ class APISyncEngine:
         }
         
         checksum = self.generate_sha256_checksum(payload)
-        
         headers = {
             "Content-Type": "application/json",
             "X-Checksum-SHA256": checksum,
