@@ -1,26 +1,46 @@
-# Salsabilah Amin Group - Central ERP & Control Engine
+# Salsabilah Enterprise ERP & Treasury Engine
 
-## 🌐 Overview
-Central Business ERP, Inventory Controller, and Automated VAT Management Engine for **Salsabilah Amin Group**, powered by Gemini AI Architecture.
+A dual-stack enterprise-grade ERP and treasury management backend designed for automated SAP ECC 6.0 ledger synchronization, AI-powered transaction auditing, and real-time financial tracking.
 
-## 🏢 Business Operations & Integrations
-- **Core Subsidiaries:** salsabilah.com & salsabilahelectronics.com
-- **Strategic Partners:** Minister Hi-Tech Park (Minister Myone Group) & Butterfly Marketing Ltd.
-- **Modules:** ERP Management, SAP Data Sync, Ledger Audit, VAT & Margin Automated Engine.
+---
 
-## 🚀 Deployment Status
-- **Platform:** Netlify Production
-- **Live URL:** https://salsabilah-erp.netlify.app
-- **Status:** Active & Online
+## 🚀 System Architecture & Tech Stack
+
+* **Frontend:** Centralized Treasury Dashboard & SAP Ledger Audit Panel (`index.html`, `sap.html` built with Tailwind CSS v4)
+* **Backend API (Node.js):** Express.js server with MongoDB (Mongoose), featuring cryptographic SHA-256 payload verification and real-time treasury endpoints.
+* **Sync & Automation Engine (Python):** Python-based worker & API sync controller (`worker.py`, `api_sync_engine.py`) integrating with Google GenAI for automated audit insights.
+* **Infrastructure & CI/CD:** GitHub Actions (`salsabilah-automation.yml`) for cron jobs and Render Blueprint (`render.yaml`) for production deployment.
+
+---
+
+## 🏢 Tracked Enterprise Entities
+
+1. **Minister Hi-Tech Park Electronics Ltd.**
+   * **Dealer Code:** `DEAL002905`
+   * **Primary Ledger Focus:** Real-time net advance buffer and zero-debt sub-ledger reconciliation.
+2. **Butterfly Marketing Limited**
+   * **Dealer Code:** `3000002272`
+   * **Primary Ledger Focus:** Verified credit release and banking channel tracking.
+
+---
+
+## 🛠️ Project Structure
+
+```text
 -business-erp-engine/
 ├── .github/
 │   └── workflows/
-│       └── salsabilah-automation.yml   # ব্যাকগ্রাউন্ড শিডিউল ও ক্রন জব
+│       └── salsabilah-automation.yml  # Background automation & cron jobs
+├── models/
+│   └── ledger.js                      # Mongoose Ledger schema
 ├── payloads/
-│   └── transactions_payload.json       # ব্যাংকিং ও SAP ট্রানজেকশন ডেটা
-├── worker.py                           # Gemini API ও ব্যাংক API অডিটিং স্ক্রিপ্ট
-├── sync_engine.py                      # রিয়েল-টাইম লেজার সিঙ্ক্রোনাইজেশন ইঞ্জিন
-├── sap.html                            # SAP লেজার ভেরিফিকেশন প্যানেল (Frontend)
-├── index.html                          # সেন্ট্রাল ট্রিজারি ড্যাশবোর্ড
-├── requirements.txt                    # পাইথন ডিপেন্ডেন্সি (requests, google-genai ইত্যাদি)
-└── README.md                           # প্রোজেক্ট ডকুমেন্টেশন
+│   └── transactions_payload.json      # Sample batch transaction data
+├── api_sync_engine.py                 # Python SAP-to-Node sync controller
+├── database.py                        # SQLAlchemy & Redis async configuration
+├── worker.py                          # AI Audit & transaction processing worker
+├── server.js                          # Node.js Express webhook & API server
+├── index.html                         # Central Treasury Dashboard
+├── sap.html                           # SAP ECC 6.0 Ledger Verification Panel
+├── requirements.txt                   # Python dependencies
+├── package.json                       # Node.js dependencies
+└── render.yaml                        # Render cloud deployment blueprint
