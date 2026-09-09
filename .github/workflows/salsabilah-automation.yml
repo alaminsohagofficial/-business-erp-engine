@@ -1,0 +1,35 @@
+name: Salsabilah Background Automation
+
+on:
+  schedule:
+    # প্রতিদিন নির্দিষ্ট সময় পর পর রান হবে (UTC অনুযায়ী সেট করা)
+    - cron: '0 0,6,12,18 * * *'
+  workflow_dispatch: # চাইলে যখন ইচ্ছা ম্যানুয়ালি এক ক্লিকে রান করার অপশন
+
+jobs:
+  run-automation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Worker & Sync Engine
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          BANK_API_ENDPOINT: ${{ secrets.BANK_API_ENDPOINT }}
+          BANK_API_TOKEN: ${{ secrets.BANK_API_TOKEN }}
+          LEDGER_API_URL: ${{ secrets.LEDGER_API_URL }}
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+        run: |
+          python worker.py
+          python sync_engine.py
