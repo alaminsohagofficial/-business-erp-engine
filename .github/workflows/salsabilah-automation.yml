@@ -2,9 +2,8 @@ name: Salsabilah Background Automation
 
 on:
   schedule:
-    # প্রতিদিন নির্দিষ্ট সময় পর পর রান হবে (UTC অনুযায়ী সেট করা)
     - cron: '0 0,6,12,18 * * *'
-  workflow_dispatch: # চাইলে যখন ইচ্ছা ম্যানুয়ালি এক ক্লিকে রান করার অপশন
+  workflow_dispatch:
 
 jobs:
   run-automation:
