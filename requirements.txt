@@ -1,17 +1,10 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import declarative_base
-import redis.asyncio as aioredis
-from app.config.settings import settings
-
-# PostgreSQL Async Engine
-DATABASE_URL = settings.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
-engine = create_async_engine(DATABASE_URL, echo=False, pool_pre_ping=True)
-SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
-Base = declarative_base()
-
-# Redis Client
-redis_client = aioredis.from_url(settings.REDIS_URL, decode_responses=True)
-
-async def get_db():
-    async with SessionLocal() as session:
-        yield session
+fastapi>=0.110.0
+uvicorn>=0.28.0
+sqlalchemy>=2.0.28
+asyncpg>=0.29.0
+redis>=5.0.1
+requests>=2.31.0
+google-genai>=1.0.0
+pydantic>=2.6.4
+pydantic-settings>=2.2.1
+python-dotenv>=1.0.1
