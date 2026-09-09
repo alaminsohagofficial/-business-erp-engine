@@ -1,23 +1,38 @@
-{
-  "name": "business-erp-engine",
-  "version": "1.0.0",
-  "description": "ERP and SAP integration backend for S.R. Electronics Park",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "helmet": "^7.1.0",
-    "mongoose": "^8.0.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
-}
+services:
+  # ১. Node.js Express Backend & Treasury API Server
+  - type: web
+    name: salsabilah-erp-backend
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: MONGO_URI
+        sync: false # Render Dashboard-এ সেট করতে হবে
+
+  # ২. Python Worker & API Sync Engine (Background Cron Worker)
+  - type: worker
+    name: salsabilah-python-worker
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python worker.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: LEDGER_API_URL
+        value: https://salsabilah-erp-backend.onrender.com/api/v1/sync/ledger
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: BANK_API_ENDPOINT
+        sync: false
+      - key: BANK_API_TOKEN
+        sync: false
+      - key: API_TOKEN
+        sync: false
