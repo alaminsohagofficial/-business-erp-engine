@@ -1,5 +1,4 @@
 services:
-  # 1. PostgreSQL Database
   db:
     image: postgres:15-alpine
     container_name: erp-db
@@ -16,11 +15,10 @@ services:
     networks:
       - erp-network
 
-  # 2. Python ERP Engine & API (FastAPI/Flask)
   backend:
     build:
       context: .
-      dockerfile: ./backend/Dockerfile
+      dockerfile: Dockerfile
     container_name: erp-backend
     restart: unless-stopped
     env_file: .env
@@ -31,30 +29,27 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - .:/app
     networks:
       - erp-network
 
-  # 3. Asynchronous Sync Service (Worker / Dispatch)
   sync-worker:
     build:
       context: .
-      dockerfile: ./services/Dockerfile
+      dockerfile: Dockerfile.services
     container_name: erp-sync-worker
     restart: unless-stopped
     env_file: .env
-    command: ["node", "dispatchSyncEngine.js"] # or: ["python", "api_sync_engine.py"]
     depends_on:
       - db
       - backend
     networks:
       - erp-network
 
-  # 4. Frontend Dashboard (React / Vite)
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.frontend
     container_name: erp-frontend
     restart: unless-stopped
     ports:
@@ -71,3 +66,4 @@ networks:
 volumes:
   pgdata:
     driver: local
+    
