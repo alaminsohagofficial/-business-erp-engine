@@ -1,3 +1,10 @@
+"""
+Salsabilah Banking & AI Audit Pipeline
+-------------------------------------
+Fetches banking transactions and processes them through Gemini 
+for automated ERP ledger classification and compliance checking.
+"""
+
 import os
 import requests
 from google import genai
