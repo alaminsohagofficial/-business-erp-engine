@@ -1,3 +1,10 @@
+"""
+Salsabilah Amin Group - Core Business ERP Engine Main Application
+---------------------------------------------------------------
+FastAPI entry point managing enterprise routers, database lifespans, 
+and AI-driven audit pipelines with Redis caching.
+"""
+
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
@@ -18,7 +25,7 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
-    # Shutdown logic if needed
+    # Shutdown logic if needed (e.g., closing redis/db connections gracefully)
 
 
 app = FastAPI(
@@ -54,6 +61,7 @@ class AuditRequest(BaseModel):
 @app.post("/api/v1/control/audit")
 async def perform_audit(payload: AuditRequest):
     try:
+        # Pydantic v2 compatible dict conversion if needed, payload.dict() works fine for v1/v2 compatibility
         report = await AIControlEngine.audit_transaction(payload.dict())
         await redis_client.set(
             f"audit:{payload.transaction_id}", report, ex=86400
