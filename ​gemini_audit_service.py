@@ -1,8 +1,24 @@
+"""
+Gemini Audit Service
+-------------------
+Module to analyze and verify ERP ledger summaries for compliance 
+using the modern google-genai SDK.
+"""
+
 import os
 from google import genai
 from google.genai.errors import APIError
 
-def verify_ledger_with_gemini(ledger_summary):
+def verify_ledger_with_gemini(ledger_summary: str) -> str:
+    """
+    Sends an ERP ledger summary to Gemini to retrieve a compliance verification status.
+    
+    Args:
+        ledger_summary (str): The text summary of the ledger.
+        
+    Returns:
+        str: Gemini's compliance audit response or an error message.
+    """
     # Ensure API key exists in environment
     if not os.environ.get("GEMINI_API_KEY"):
         return "Error: GEMINI_API_KEY environment variable is not set."
@@ -29,6 +45,11 @@ def verify_ledger_with_gemini(ledger_summary):
         return f"An unexpected error occurred: {e}"
 
 if __name__ == "__main__":
-    summary = "Dealer DEAL002905: MYONE, ELE, and PARKS ledgers are fully settled with BDT 0.00 balance and BDT 3,30,56,297.00 net advance buffer."
+    # Test execution when run directly
+    summary = (
+        "Dealer DEAL002905: MYONE, ELE, and PARKS ledgers are fully "
+        "settled with BDT 0.00 balance and BDT 3,30,56,297.00 net advance buffer."
+    )
+    print("Running audit analysis...")
     result = verify_ledger_with_gemini(summary)
     print("Gemini Audit Response:\n", result)
