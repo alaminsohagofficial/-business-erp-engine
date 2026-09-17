@@ -29,6 +29,10 @@ app.post('/api/v1/sync/ledger', verifyChecksum, async (req, res) => {
     try {
         const { dealer_code, sap_posting_doc, net_advance_buffer, status } = req.body;
         console.log(`[Sync Received] Dealer: ${dealer_code}, SAP Doc: ${sap_posting_doc}`);
+        
+        // Optional: Save to MongoDB using Ledger model if needed
+        // await Ledger.create({ dealer_code, sap_posting_doc, net_advance_buffer, status });
+
         res.status(200).json({
             success: true,
             message: 'Ledger synchronized and verified via SHA-256 successfully',
