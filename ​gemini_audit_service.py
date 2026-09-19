@@ -53,3 +53,4 @@ if __name__ == "__main__":
     print("Running audit analysis...")
     result = verify_ledger_with_gemini(summary)
     print("Gemini Audit Response:\n", result)
+    
