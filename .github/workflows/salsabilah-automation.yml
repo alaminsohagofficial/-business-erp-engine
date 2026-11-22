@@ -2,15 +2,32 @@ name: Salsabilah Background Automation
 
 on:
   schedule:
+    # Runs at 00:00, 06:00, 12:00, and 18:00 UTC (06:00, 12:00, 18:00, 00:00 +06)
     - cron: '0 0,6,12,18 * * *'
   workflow_dispatch:
+
+concurrency:
+  group: salsabilah-background-automation
+  cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
   run-automation:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash
+
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      BANK_API_ENDPOINT: ${{ secrets.BANK_API_ENDPOINT }}
+      BANK_API_TOKEN: ${{ secrets.BANK_API_TOKEN }}
+      LEDGER_API_URL: ${{ secrets.LEDGER_API_URL }}
+      API_TOKEN: ${{ secrets.API_TOKEN }}
+      PYTHONUNBUFFERED: "1"
 
     steps:
       - name: Checkout Code
@@ -24,32 +41,18 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          set -e
+          set -euo pipefail
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
-            echo "No requirements.txt found, skipping dependency install."
-          fi
+          pip install -r requirements.txt
 
       - name: Run Worker
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          BANK_API_ENDPOINT: ${{ secrets.BANK_API_ENDPOINT }}
-          BANK_API_TOKEN: ${{ secrets.BANK_API_TOKEN }}
-          LEDGER_API_URL: ${{ secrets.LEDGER_API_URL }}
-          API_TOKEN: ${{ secrets.API_TOKEN }}
+        timeout-minutes: 15
         run: |
-          set -e
+          set -euo pipefail
           python worker.py
 
       - name: Run Sync Engine
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          BANK_API_ENDPOINT: ${{ secrets.BANK_API_ENDPOINT }}
-          BANK_API_TOKEN: ${{ secrets.BANK_API_TOKEN }}
-          LEDGER_API_URL: ${{ secrets.LEDGER_API_URL }}
-          API_TOKEN: ${{ secrets.API_TOKEN }}
+        timeout-minutes: 15
         run: |
-          set -e
-          python sync_engine.py
+          set -euo pipefail
+          python api_sync_engine.py
