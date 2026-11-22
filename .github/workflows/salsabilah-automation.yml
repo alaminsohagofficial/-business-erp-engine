@@ -8,21 +8,31 @@ on:
 jobs:
   run-automation:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
+          cache: 'pip'
 
       - name: Install Dependencies
         run: |
+          set -e
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "No requirements.txt found, skipping dependency install."
+          fi
 
-      - name: Run Worker & Sync Engine
+      - name: Run Worker
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           BANK_API_ENDPOINT: ${{ secrets.BANK_API_ENDPOINT }}
@@ -30,5 +40,16 @@ jobs:
           LEDGER_API_URL: ${{ secrets.LEDGER_API_URL }}
           API_TOKEN: ${{ secrets.API_TOKEN }}
         run: |
+          set -e
           python worker.py
+
+      - name: Run Sync Engine
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          BANK_API_ENDPOINT: ${{ secrets.BANK_API_ENDPOINT }}
+          BANK_API_TOKEN: ${{ secrets.BANK_API_TOKEN }}
+          LEDGER_API_URL: ${{ secrets.LEDGER_API_URL }}
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+        run: |
+          set -e
           python sync_engine.py
