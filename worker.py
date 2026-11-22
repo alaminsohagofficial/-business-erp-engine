@@ -1,13 +1,14 @@
 """
 Salsabilah Banking & AI Audit Pipeline
 -------------------------------------
-Fetches banking transactions and processes them through Gemini
-for automated ERP ledger classification and compliance checking.
+Fetches banking transactions, processes them through Gemini
+for automated ERP ledger classification, and saves output for ledger_sync.py.
 """
 
 import json
 import os
 import sys
+from pathlib import Path
 import requests
 from google import genai
 from google.genai import types
@@ -16,6 +17,8 @@ from google.genai.errors import APIError
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 BANK_API_ENDPOINT = os.getenv("BANK_API_ENDPOINT")
 BANK_API_TOKEN = os.getenv("BANK_API_TOKEN")
+
+OUTPUT_FILE = Path("audit_output.json")
 
 
 def fetch_banking_transactions():
@@ -74,9 +77,14 @@ Return a JSON object containing:
         )
         if not response.text:
             raise RuntimeError("Empty response received from Gemini API.")
-        return response.text
+
+        # Validate that response.text is proper JSON
+        parsed = json.loads(response.text)
+        return parsed
     except APIError as e:
         raise RuntimeError(f"Gemini API Error: {e}") from e
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"Invalid JSON returned by Gemini: {e}") from e
 
 
 def run_pipeline():
@@ -98,8 +106,15 @@ def run_pipeline():
         print(f"Pipeline Failed: {e}", file=sys.stderr)
         sys.exit(1)
 
+    payload = {
+        "source_transaction": tx_data,
+        "audit_result": insights,
+    }
+    OUTPUT_FILE.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+
     print("Gemini API Ledger Processing Completed:\n")
-    print(insights)
+    print(json.dumps(payload, indent=2, ensure_ascii=False))
+    print(f"\nSaved output to {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":
