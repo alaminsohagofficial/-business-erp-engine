@@ -28,6 +28,7 @@ jobs:
       LEDGER_API_URL: ${{ secrets.LEDGER_API_URL }}
       API_TOKEN: ${{ secrets.API_TOKEN }}
       PYTHONUNBUFFERED: "1"
+      PYTHONPATH: "."
 
     steps:
       - name: Checkout Code
@@ -51,8 +52,8 @@ jobs:
           set -euo pipefail
           python worker.py
 
-      - name: Run Sync Engine
+      - name: Run Ledger Sync
         timeout-minutes: 15
         run: |
           set -euo pipefail
-          python api_sync_engine.py
+          python api/ledger_sync.py
