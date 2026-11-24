@@ -1,46 +1,17 @@
-# Salsabilah Enterprise ERP & Treasury Engine
+# Business ERP Engine — Cloud-Native Enterprise & AI Operations Platform
 
-A dual-stack enterprise-grade ERP and treasury management backend designed for automated SAP ECC 6.0 ledger synchronization, AI-powered transaction auditing, and real-time financial tracking.
+A full-stack, containerized Enterprise Resource Planning (ERP) and automated reconciliation engine featuring real-time sales/inventory intelligence, Gemini AI integration, and production observability.
 
----
+## Architecture & Engineering Highlights
+- **Full-Stack Core:** Modular Python backend (`database.py`, `api_sync_engine.py`) paired with a reactive JavaScript/TypeScript dashboard (`Dashboard.jsx`, `disputes.router.js`).
+- **Cloud-Native Deployment:** Multi-service containerization with `Dockerfile`, `docker-compose.yml`, Kubernetes ingress (`ingress.yaml`), and Helm packaging (`Chart.yaml`).
+- **Observability & Reliability:** Built-in telemetry and alerting via Grafana dashboards (`grafana-dashboard-configmap.yaml`), Alertmanager (`alertmanager-config.yaml`), and automated test suites (`tests/`).
+- **API-First Design:** Documented via OpenAPI specification (`openapi.yaml`) with automated treasury PDF reporting (`generate_treasury_pdf.py`).
 
-## 🚀 System Architecture & Tech Stack
-
-* **Frontend:** Centralized Treasury Dashboard & SAP Ledger Audit Panel (`index.html`, `sap.html` built with Tailwind CSS v4)
-* **Backend API (Node.js):** Express.js server with MongoDB (Mongoose), featuring cryptographic SHA-256 payload verification and real-time treasury endpoints.
-* **Sync & Automation Engine (Python):** Python-based worker & API sync controller (`worker.py`, `api_sync_engine.py`) integrating with Google GenAI for automated audit insights.
-* **Infrastructure & CI/CD:** GitHub Actions (`salsabilah-automation.yml`) for cron jobs and Render Blueprint (`render.yaml`) for production deployment.
-
----
-
-## 🏢 Tracked Enterprise Entities
-
-1. **Minister Hi-Tech Park Electronics Ltd.**
-   * **Dealer Code:** `DEAL002905`
-   * **Primary Ledger Focus:** Real-time net advance buffer and zero-debt sub-ledger reconciliation.
-2. **Butterfly Marketing Limited**
-   * **Dealer Code:** `3000002272`
-   * **Primary Ledger Focus:** Verified credit release and banking channel tracking.
+## Tech Stack
+- **Languages:** JavaScript (37%), Python (32.2%), TypeScript (4.5%), HTML/CSS[span_8](start_span)[span_8](end_span)
+- **Infrastructure & DevOps:** Docker, Kubernetes / Helm, Grafana, Alertmanager, Netlify[span_9](start_span)[span_9](end_span)
+- **AI & Auth:** Google Gemini AI, Firebase / Google Authentication[span_10](start_span)[span_10](end_span)
 
 ---
-
-## 🛠️ Project Structure
-
-```text
--business-erp-engine/
-├── .github/
-│   └── workflows/
-│       └── salsabilah-automation.yml  # Background automation & cron jobs
-├── models/
-│   └── ledger.js                      # Mongoose Ledger schema
-├── payloads/
-│   └── transactions_payload.json      # Sample batch transaction data
-├── api_sync_engine.py                 # Python SAP-to-Node sync controller
-├── database.py                        # SQLAlchemy & Redis async configuration
-├── worker.py                          # AI Audit & transaction processing worker
-├── server.js                          # Node.js Express webhook & API server
-├── index.html                         # Central Treasury Dashboard
-├── sap.html                           # SAP ECC 6.0 Ledger Verification Panel
-├── requirements.txt                   # Python dependencies
-├── package.json                       # Node.js dependencies
-└── render.yaml                        # Render cloud deployment blueprint
+**Architect:** MD. AL AMIN SOHAG | [salsabilah.com](https://salsabilah.com)
